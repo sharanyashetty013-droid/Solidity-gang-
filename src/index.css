@@ -1,0 +1,187 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@layer base {
+  :root {
+    --bg-outer: #FAD0EA;
+    --bg-section: #F7F7F7;
+    --card: #FFFFFF;
+    --accent: #E0218A;
+    --text: #111111;
+    --text-muted: #6B6B6B;
+    --yellow: #FFE45C;
+    --purple: #6B3FE0;
+  }
+
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    scroll-behavior: smooth;
+  }
+}
+
+.font-display {
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.font-body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Subtle Dotted Grid Background */
+.bg-dotted-grid {
+  background-image: radial-gradient(rgba(17, 17, 17, 0.09) 1.25px, transparent 1.25px);
+  background-size: 24px 24px;
+}
+
+.bg-dotted-grid-subtle {
+  background-image: radial-gradient(rgba(224, 33, 138, 0.12) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Custom scrollbar for modern feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAD0EA;
+}
+::-webkit-scrollbar-thumb {
+  background: #E0218A;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c51474;
+}
+
+/* Shimmer Sweep Animation for Pitch Line */
+@keyframes shimmerSweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #111111 0%,
+    #111111 40%,
+    #E0218A 50%,
+    #111111 60%,
+    #111111 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmerSweep 4s linear infinite;
+}
+
+/* Float Animations */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-gentle {
+  animation: floatGentle 5s ease-in-out infinite;
+}
+
+@keyframes floatOrb {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(12px, -18px) scale(1.05);
+  }
+  66% {
+    transform: translate(-15px, 10px) scale(0.95);
+  }
+}
+
+.animate-float-orb {
+  animation: floatOrb 12s ease-in-out infinite;
+}
+
+/* Seamless Marquee Scroll */
+@keyframes marqueeSeamless {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marqueeSeamless 30s linear infinite;
+}
+
+.animate-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* Scanline Sweep */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(1000%);
+    opacity: 0;
+  }
+}
+
+.animate-scanline {
+  animation: scanline 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* SVG in-place pulse/ping fix */
+.svg-ping-centered {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Pulse Glow */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(224, 33, 138, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(224, 33, 138, 0.85);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+/* Reduced motion media query */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

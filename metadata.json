@@ -1,0 +1,6 @@
+{
+  "name": "Walls Don't Lie",
+  "description": "Walls Don't Lie is a rental deposit escrow dApp with AI evidence checks. Deposits held in a smart contract. Settled by photo proof, not phone calls.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
