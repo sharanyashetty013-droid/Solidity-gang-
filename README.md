@@ -1,20 +1,34 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+
+# Walls Don't Lie 🏠✨
+
+**Proof on every wall. Deposit back in your hands.**
+
 </div>
 
-# Run and deploy your AI Studio app
+## Overview
 
-This contains everything you need to run your app locally.
+**Walls Don't Lie** is a cutting-edge rental deposit escrow dApp powered by AI evidence checks[cite: 6, 7]. It ensures rental deposits are securely held in smart contracts and fairly settled using transparent photo proof rather than lengthy disputes or phone calls[cite: 6, 7].
 
-View your app in AI Studio: https://ai.studio/apps/2bb5e519-f782-45d3-8559-53793bc059a2
+## Features
 
-## Run Locally
+* **Secure Escrow:** Deposits are locked and managed securely via smart contracts[cite: 6, 7].
+* **AI Evidence Checks:** Uses automated photo verification to handle check-in/check-out condition reports seamlessly[cite: 6, 7].
+* **Modern Tech Stack:** Built with React, TypeScript, Vite, Tailwind CSS, and Express backend support[cite: 3, 5, 6, 8, 10].
 
-**Prerequisites:**  Node.js
+## Tech Stack
 
+* **Frontend:** React, TypeScript, Tailwind CSS, Vite, Three.js, Framer Motion / Motion[cite: 5, 6, 8, 10]
+* **Backend:** Node.js, Express[cite: 3, 5, 8]
+* **AI Integration:** Google Gen AI SDK (`@google/genai`)[cite: 5, 8]
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Getting Started Locally
+
+### Prerequisites
+* **Node.js** installed on your machine[cite: 9]
+
+### Installation & Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/sharanyashetty013-droid/Solidity-gang-.git](https://github.com/sharanyashetty013-droid/Solidity-gang-.git)
