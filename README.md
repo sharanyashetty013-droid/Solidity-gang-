@@ -1,4 +1,4 @@
-# Walls Don't Lie
+# Walls Don't Lie 🏠
 ### Proof on every wall. Deposit back in your hands.
 
 ---
@@ -11,9 +11,9 @@ Walls Don't Lie is a decentralized rental deposit escrow application[cite: 6, 7]
 
 ## Core Capabilities
 
-* **Smart Contract Escrow:** Rental deposits are locked and managed transparently through secure escrow protocols[cite: 6, 7].
-* **Automated Evidence Checks:** Integrates AI-driven photo verification to accurately assess check-in and check-out conditions[cite: 6, 7].
-* **Decentralized Trust:** Eliminates intermediary bias, ensuring fair deposit returns based strictly on verified records[cite: 6, 7].
+* **Smart Contract Escrow 🔒:** Rental deposits are locked and managed transparently through secure escrow protocols[cite: 6, 7].
+* **Automated Evidence Checks 🤖:** Integrates AI-driven photo verification to accurately assess check-in and check-out conditions[cite: 6, 7].
+* **Decentralized Trust ⚡:** Eliminates intermediary bias, ensuring fair deposit returns based strictly on verified records[cite: 6, 7].
 
 ---
 
