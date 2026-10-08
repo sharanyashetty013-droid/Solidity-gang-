@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -7,6 +7,7 @@ import { HowItWorks } from './components/HowItWorks';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { PageLoader } from './components/PageLoader';
+import { useWallet } from './hooks/useWallet';
 
 export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -28,12 +29,22 @@ export default function App() {
     setIsLoaded(true);
   };
 
-  const handleLaunchApp = () => {
-    setToastMessage('Coming soon on Sepolia');
+    const { error, connect } = useWallet();
+
+  const showToast = (message: string) => {
+    setToastMessage(message);
     setTimeout(() => {
       setToastMessage(null);
     }, 3200);
   };
+
+  const handleLaunchApp = () => {
+    connect();
+  };
+
+  useEffect(() => {
+    if (error) showToast(error);
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-[#FAD0EA] p-2 sm:p-4 md:p-6 lg:p-8 font-body text-[#111111] antialiased selection:bg-[#E0218A] selection:text-white flex flex-col items-center relative">
