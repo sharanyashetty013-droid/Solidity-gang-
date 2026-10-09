@@ -1,22 +1,14 @@
 import React, { useState } from 'react';
 import { Logo } from './Logo';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
-import { MagneticButton } from './MagneticButton';
+import { Menu, X } from 'lucide-react';
 
 interface NavbarProps {
-  onLaunchClick: () => void;
+  onLaunchClick?: () => void;
   isToastVisible?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onLaunchClick, isToastVisible = false }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
+export const Navbar: React.FC<NavbarProps> = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleLaunchClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setShowTooltip(false);
-    onLaunchClick();
-  };
 
   const navLinks = [
     { name: 'Features', href: '#features' },
@@ -27,7 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchClick, isToastVisible = 
   return (
     <header className="sticky top-4 md:top-6 z-40 w-full px-4 sm:px-6 pointer-events-none">
       <div className="max-w-5xl mx-auto">
-        <nav className="pointer-events-auto bg-white/95 backdrop-blur-md px-4 sm:px-6 py-2.5 sm:py-3 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/5 flex items-center justify-between transition-all">
+        <nav className="pointer-events-auto bg-white/95 backdrop-blur-md px-5 sm:px-7 py-2.5 sm:py-3 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/5 flex items-center justify-between transition-all">
           {/* Logo Left */}
           <a
             href="#"
@@ -38,7 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchClick, isToastVisible = 
           </a>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-7 text-sm font-medium text-[#111111]">
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[#111111]">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -50,35 +42,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchClick, isToastVisible = 
             ))}
           </div>
 
-          {/* Right Action Area */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Launch App Magnetic Pill Button */}
-            <div className="relative">
-              <MagneticButton
-                onClick={handleLaunchClick}
-                onMouseEnter={() => {
-                  if (!isToastVisible) setShowTooltip(true);
-                }}
-                onMouseLeave={() => setShowTooltip(false)}
-                className="px-4 sm:px-5 py-2 rounded-full bg-[#E0218A] hover:bg-[#c51474] text-white text-xs sm:text-sm font-semibold shadow-sm hover:shadow transition-all duration-200 cursor-pointer whitespace-nowrap"
-              >
-                <span>Launch App</span>
-                <ArrowUpRight className="w-3.5 h-3.5 opacity-80" />
-              </MagneticButton>
-
-              {/* Tooltip */}
-              {showTooltip && !isToastVisible && (
-                <div className="absolute top-full right-0 mt-2 z-50 px-3 py-1.5 rounded-full bg-[#111111] text-white text-xs font-medium shadow-lg animate-in fade-in slide-in-from-top-1 duration-150 whitespace-nowrap flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#FFE45C]" />
-                  Coming soon on Sepolia
-                </div>
-              )}
-            </div>
-
+          {/* Right Area: Mobile Menu Trigger (Desktop links are clean and centered) */}
+          <div className="flex items-center md:hidden">
             {/* Mobile menu trigger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-[#111111] hover:bg-black/5 transition-colors"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-[#111111] hover:bg-black/5 transition-colors cursor-pointer"
               aria-label="Toggle mobile menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

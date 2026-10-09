@@ -41,7 +41,7 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
 
     // Frame the pink house, yellow sphere and purple ring nicely in center
-    const initialZ = width < 640 ? 11.5 : width < 1024 ? 10.0 : 9.2;
+    const initialZ = width < 640 ? 10.6 : width < 1024 ? 9.4 : 8.6;
     camera.position.set(0, 0, initialZ);
 
     const renderer = new THREE.WebGLRenderer({
@@ -57,11 +57,12 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
     renderer.toneMappingExposure = 1.15;
     container.appendChild(renderer.domElement);
 
-    // Root Group for 3D elements
+    // Root Group for 3D elements (scaled up for bigger presence)
     const sceneGroup = new THREE.Group();
+    sceneGroup.scale.set(1.42, 1.42, 1.42);
     scene.add(sceneGroup);
 
-    // 1. Glossy Glass/Clearcoat Magenta 3D House Object
+    // 1. Sleek Architectural Obsidian & Emerald Cryptographic House
     const houseShape = new THREE.Shape();
     const roofY = 2.4;
     const wallTopY = 0.6;
@@ -103,19 +104,19 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
     const houseGeometry = new THREE.ExtrudeGeometry(houseShape, extrudeSettings);
     houseGeometry.center();
 
-    // Glossy clearcoat glass material in magenta #E0218A
+    // High-tech dark obsidian crystal material with deep emerald inner luminescence
     const houseMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xE0218A,
-      emissive: 0x4a0528,
-      emissiveIntensity: 0.3,
-      metalness: 0.1,
-      roughness: 0.12,
+      color: 0x0F172A,
+      emissive: 0x064E3B,
+      emissiveIntensity: 0.5,
+      metalness: 0.2,
+      roughness: 0.08,
       clearcoat: 1.0,
-      clearcoatRoughness: 0.08,
-      transmission: 0.45,
-      thickness: 1.2,
-      ior: 1.48,
-      reflectivity: 0.9,
+      clearcoatRoughness: 0.05,
+      transmission: 0.32,
+      thickness: 1.3,
+      ior: 1.54,
+      reflectivity: 0.95,
     });
 
     const houseMesh = new THREE.Mesh(houseGeometry, houseMaterial);
@@ -126,54 +127,57 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
     houseGroup.add(houseMesh);
     sceneGroup.add(houseGroup);
 
-    // 2. Drifting Soft Pink and Yellow Glass Orbs & Rings
+    // 2. High-Tech Floating Spheres & Titanium Cryptographic Ring
     const orbGroup = new THREE.Group();
     sceneGroup.add(orbGroup);
 
     const orbs: Array<{ mesh: THREE.Mesh; speedX: number; speedY: number; baseX: number; baseY: number; baseZ: number }> = [];
 
-    // Yellow glass orb (#FFE45C)
-    const yellowMat = new THREE.MeshPhysicalMaterial({
-      color: 0xFFE45C,
-      roughness: 0.15,
+    // Precision Emerald Glass Orb (#10B981)
+    const emeraldMat = new THREE.MeshPhysicalMaterial({
+      color: 0x10B981,
+      roughness: 0.12,
       clearcoat: 1.0,
-      transmission: 0.6,
-      ior: 1.35,
+      transmission: 0.65,
+      ior: 1.38,
+      emissive: 0x065F46,
+      emissiveIntensity: 0.25,
     });
-    const yellowOrb = new THREE.Mesh(new THREE.SphereGeometry(0.8, 32, 32), yellowMat);
-    yellowOrb.position.set(-3.8, 2.2, -2.5);
-    orbGroup.add(yellowOrb);
-    orbs.push({ mesh: yellowOrb, speedX: 0.7, speedY: 0.9, baseX: -3.8, baseY: 2.2, baseZ: -2.5 });
+    const emeraldOrb = new THREE.Mesh(new THREE.SphereGeometry(0.85, 32, 32), emeraldMat);
+    emeraldOrb.position.set(-3.8, 2.2, -2.5);
+    orbGroup.add(emeraldOrb);
+    orbs.push({ mesh: emeraldOrb, speedX: 0.7, speedY: 0.9, baseX: -3.8, baseY: 2.2, baseZ: -2.5 });
 
-    // Pink glass orb (#FAD0EA)
-    const pinkMat = new THREE.MeshPhysicalMaterial({
-      color: 0xFAD0EA,
-      roughness: 0.2,
+    // Frosted Smoked Titanium Glass Orb
+    const smokedMat = new THREE.MeshPhysicalMaterial({
+      color: 0x334155,
+      roughness: 0.18,
       clearcoat: 1.0,
       transmission: 0.55,
-      ior: 1.4,
+      ior: 1.45,
     });
-    const pinkOrb = new THREE.Mesh(new THREE.SphereGeometry(1.15, 32, 32), pinkMat);
-    pinkOrb.position.set(4.2, -1.8, -3.2);
-    orbGroup.add(pinkOrb);
-    orbs.push({ mesh: pinkOrb, speedX: 0.5, speedY: 0.6, baseX: 4.2, baseY: -1.8, baseZ: -3.2 });
+    const smokedOrb = new THREE.Mesh(new THREE.SphereGeometry(1.2, 32, 32), smokedMat);
+    smokedOrb.position.set(4.2, -1.8, -3.2);
+    orbGroup.add(smokedOrb);
+    orbs.push({ mesh: smokedOrb, speedX: 0.5, speedY: 0.6, baseX: 4.2, baseY: -1.8, baseZ: -3.2 });
 
-    // Small Magenta orb (#E0218A)
-    const smallOrb = new THREE.Mesh(new THREE.SphereGeometry(0.45, 32, 32), houseMaterial);
-    smallOrb.position.set(-2.6, -2.2, -1.0);
-    orbGroup.add(smallOrb);
-    orbs.push({ mesh: smallOrb, speedX: 1.1, speedY: 0.8, baseX: -2.6, baseY: -2.2, baseZ: -1.0 });
+    // Glowing Mint Satellite Orb (#34D399)
+    const mintOrb = new THREE.Mesh(new THREE.SphereGeometry(0.48, 32, 32), emeraldMat);
+    mintOrb.position.set(-2.6, -2.2, -1.0);
+    orbGroup.add(mintOrb);
+    orbs.push({ mesh: mintOrb, speedX: 1.1, speedY: 0.8, baseX: -2.6, baseY: -2.2, baseZ: -1.0 });
 
-    // Translucent Torus Ring (Purple/Magenta #6B3FE0)
+    // Translucent Titanium Cryptographic Ring
     const ringMat = new THREE.MeshPhysicalMaterial({
-      color: 0x6B3FE0,
+      color: 0x94A3B8,
+      metalness: 0.65,
       roughness: 0.2,
-      clearcoat: 0.8,
-      transmission: 0.7,
+      clearcoat: 0.9,
+      transmission: 0.35,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.85,
     });
-    const ringMesh = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.12, 16, 64), ringMat);
+    const ringMesh = new THREE.Mesh(new THREE.TorusGeometry(1.7, 0.12, 16, 64), ringMat);
     ringMesh.position.set(3.4, 2.0, -2.0);
     ringMesh.rotation.x = Math.PI / 3;
     orbGroup.add(ringMesh);
@@ -187,13 +191,13 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
     keyLight.castShadow = true;
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xE0218A, 2.2);
+    const rimLight = new THREE.DirectionalLight(0x10B981, 2.4);
     rimLight.position.set(-6, -3, -4);
     scene.add(rimLight);
 
-    const warmLight = new THREE.DirectionalLight(0xFFE45C, 1.5);
-    warmLight.position.set(0, -6, 5);
-    scene.add(warmLight);
+    const fillLight = new THREE.DirectionalLight(0x94A3B8, 1.2);
+    fillLight.position.set(0, -6, 5);
+    scene.add(fillLight);
 
     // Mouse Tracking for subtle parallax tilt
     let mouseX = 0;
@@ -214,7 +218,7 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
       const w = container.clientWidth || 800;
       const h = container.clientHeight || 460;
       camera.aspect = w / h;
-      camera.position.z = w < 640 ? 11.5 : width < 1024 ? 10.0 : 9.2;
+      camera.position.z = w < 640 ? 10.6 : w < 1024 ? 9.4 : 8.6;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
@@ -272,8 +276,8 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
       renderer.dispose();
       houseGeometry.dispose();
       houseMaterial.dispose();
-      yellowMat.dispose();
-      pinkMat.dispose();
+      emeraldMat.dispose();
+      smokedMat.dispose();
       ringMat.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
@@ -286,17 +290,17 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
     return (
       <div className={`relative w-full h-full flex items-center justify-center pointer-events-none overflow-hidden ${className}`}>
         {/* Soft morphing gradient orbs with CSS parallax */}
-        <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-gradient-to-tr from-[#FFE45C]/40 via-[#FAD0EA] to-[#E0218A]/30 blur-3xl opacity-75 animate-float-orb" />
+        <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-gradient-to-tr from-emerald-500/20 via-slate-700/20 to-teal-500/20 blur-3xl opacity-75 animate-float-orb" />
         {/* Central Stylized Vector House Logo Silhouette */}
-        <div className="absolute w-32 h-32 opacity-35 text-[#E0218A] animate-float-gentle">
+        <div className="absolute w-32 h-32 opacity-35 text-[#0F172A] animate-float-gentle">
           <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
             <path
               d="M24 6L7 19.5C6.37 20 6 20.76 6 21.57V39C6 40.66 7.34 42 9 42H39C40.66 42 42 40.66 42 39V21.57C42 20.76 41.63 20 41 19.5L24 6Z"
               stroke="currentColor"
               strokeWidth="2.5"
             />
-            <circle cx="24" cy="23.5" r="3.5" fill="currentColor" />
-            <path d="M22.5 25.5L21.5 32H26.5L25.5 25.5" fill="currentColor" />
+            <circle cx="24" cy="23.5" r="3.5" fill="#10B981" />
+            <path d="M22.5 25.5L21.5 32H26.5L25.5 25.5" fill="#10B981" />
           </svg>
         </div>
       </div>

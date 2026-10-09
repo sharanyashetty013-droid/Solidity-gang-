@@ -31,7 +31,7 @@ export const Faq: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Section Header */}
         <div className="text-left mb-10 md:mb-12">
-          <span className="text-[#E0218A] text-xs font-bold block mb-2">
+          <span className="text-[#10B981] text-xs font-bold block mb-2">
             Faq
           </span>
           <h2 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-[#111111] tracking-tight text-balance">
@@ -51,7 +51,7 @@ export const Faq: React.FC = () => {
                 key={faq.question}
                 className={`bg-white rounded-[28px] md:rounded-[32px] border transition-all duration-300 overflow-hidden ${
                   isOpen
-                    ? 'border-[#E0218A]/30 shadow-[0_8px_30px_rgba(224,33,138,0.06)]'
+                    ? 'border-[#10B981]/40 shadow-[0_8px_30px_rgba(16,185,129,0.06)]'
                     : 'border-black/5 hover:border-black/15 shadow-[0_4px_24px_rgba(0,0,0,0.02)]'
                 }`}
               >
@@ -67,7 +67,7 @@ export const Faq: React.FC = () => {
                   <div
                     className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                       isOpen
-                        ? 'bg-[#E0218A] text-white'
+                        ? 'bg-[#10B981] text-white'
                         : 'bg-[#F7F7F7] text-[#111111] hover:bg-black/5'
                     }`}
                   >

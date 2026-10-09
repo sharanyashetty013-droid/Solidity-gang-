@@ -27,13 +27,13 @@ export const Logo: React.FC<LogoProps> = ({
 
   return (
     <div className={`inline-flex items-center gap-2.5 ${className}`}>
-      {/* House outline with keyhole in center - magenta #E0218A */}
+      {/* House outline with keyhole in center - obsidian with emerald keyhole */}
       <div className={`relative ${iconSizes[size]} shrink-0 flex items-center justify-center`}>
         <svg
           viewBox="0 0 48 48"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full text-[#E0218A]"
+          className="w-full h-full text-[#0F172A]"
         >
           {/* Rounded house contour */}
           <path
@@ -43,11 +43,11 @@ export const Logo: React.FC<LogoProps> = ({
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          {/* Keyhole: circular top + tapered trapezoid bottom */}
-          <circle cx="24" cy="23.5" r="3.75" fill="currentColor" />
+          {/* Keyhole: circular top + tapered trapezoid bottom in emerald */}
+          <circle cx="24" cy="23.5" r="3.75" fill="#10B981" />
           <path
             d="M22 25.5L20.5 33.5C20.4 34.1 20.8 34.6 21.4 34.6H26.6C27.2 34.6 27.6 34.1 27.5 33.5L26 25.5H22Z"
-            fill="currentColor"
+            fill="#10B981"
           />
         </svg>
       </div>
