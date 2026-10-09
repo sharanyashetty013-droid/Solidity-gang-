@@ -38,8 +38,8 @@ export const HowItWorks: React.FC = () => {
       renderMini: () => (
         <div className="relative w-full h-28 bg-[#F7F7F7] rounded-xl flex items-center justify-center overflow-hidden border border-black/5">
           <div className="w-14 h-14 rounded-2xl bg-white border border-black/10 shadow-sm flex items-center justify-center relative">
-            <Lock className="w-6 h-6 text-[#10B981]" />
-            <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-emerald-100 text-xs font-mono font-bold text-emerald-800 shadow-xs border border-emerald-200">
+            <Lock className="w-6 h-6 text-[#E0218A]" />
+            <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-[#FFE45C] text-xs font-mono font-bold text-[#111111] shadow-xs">
               ETH
             </span>
           </div>
@@ -57,11 +57,11 @@ export const HowItWorks: React.FC = () => {
         <div className="relative w-full h-28 bg-[#F7F7F7] rounded-xl flex items-center justify-center overflow-hidden border border-black/5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-white border border-black/10 flex items-center justify-center shadow-sm">
-              <Camera className="w-5 h-5 text-[#10B981]" />
+              <Camera className="w-5 h-5 text-[#E0218A]" />
             </div>
             <span className="text-black/30 font-bold">+</span>
-            <div className="w-10 h-10 rounded-full bg-slate-100 border border-black/10 flex items-center justify-center shadow-sm">
-              <Key className="w-5 h-5 text-[#0F172A]" />
+            <div className="w-10 h-10 rounded-full bg-[#FFE45C] border border-black/10 flex items-center justify-center shadow-sm">
+              <Key className="w-5 h-5 text-[#111111]" />
             </div>
           </div>
         </div>
@@ -77,8 +77,8 @@ export const HowItWorks: React.FC = () => {
       renderMini: () => (
         <div className="relative w-full h-28 bg-[#F7F7F7] rounded-xl flex items-center justify-center overflow-hidden border border-black/5">
           <div className="w-36 h-14 bg-white rounded-lg border border-black/10 relative overflow-hidden flex items-center justify-center shadow-xs">
-            <Camera className="w-5 h-5 text-[#10B981]/40" />
-            <div className="absolute inset-y-0 w-1 bg-[#10B981] shadow-[0_0_8px_#10B981] animate-marquee" />
+            <Camera className="w-5 h-5 text-[#E0218A]/40" />
+            <div className="absolute inset-y-0 w-1 bg-[#E0218A] shadow-[0_0_8px_#E0218A] animate-marquee" />
           </div>
         </div>
       ),
@@ -99,7 +99,7 @@ export const HowItWorks: React.FC = () => {
                 cx="28"
                 cy="28"
                 r="22"
-                stroke="#10B981"
+                stroke="#E0218A"
                 strokeWidth="3"
                 strokeDasharray="138"
                 strokeDashoffset="35"
@@ -107,7 +107,7 @@ export const HowItWorks: React.FC = () => {
                 fill="none"
               />
             </svg>
-            <Clock className="w-5 h-5 text-[#10B981] absolute" />
+            <Clock className="w-5 h-5 text-[#E0218A] absolute" />
           </div>
         </div>
       ),
@@ -125,7 +125,7 @@ export const HowItWorks: React.FC = () => {
             <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shadow-xs">
               <Send className="w-5 h-5 text-emerald-600" />
             </div>
-            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <Sparkles className="w-4 h-4 text-[#FFE45C]" />
           </div>
         </div>
       ),
@@ -147,8 +147,8 @@ export const HowItWorks: React.FC = () => {
           {/* Section Header */}
           <div className="mb-10">
             <div className="inline-flex items-center gap-2 mb-2">
-              <span className="w-4 h-0.5 bg-[#10B981] rounded-full inline-block" />
-              <span className="text-[#10B981] text-xs font-bold">
+              <span className="w-4 h-0.5 bg-[#E0218A] rounded-full inline-block" />
+              <span className="text-[#E0218A] text-xs font-bold">
                 How it works
               </span>
             </div>
@@ -162,7 +162,7 @@ export const HowItWorks: React.FC = () => {
             {/* Step Progress Line */}
             <div className="hidden lg:block absolute top-7 left-12 right-12 h-1 bg-[#F0F0F0] rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#10B981] transition-all duration-300"
+                className="h-full bg-[#E0218A] transition-all duration-300"
                 style={{
                   width: `${(activeStep / (steps.length - 1)) * 100}%`,
                 }}
@@ -182,7 +182,7 @@ export const HowItWorks: React.FC = () => {
                     onClick={() => handleStepClick(idx)}
                     className={`text-left p-4.5 rounded-2xl transition-all duration-300 cursor-pointer flex flex-col justify-between h-full border ${
                       isCurrent
-                        ? 'bg-[#F7F7F7] border-[#10B981] shadow-md ring-2 ring-[#10B981]/15 scale-[1.02]'
+                        ? 'bg-[#F7F7F7] border-[#E0218A] shadow-md ring-2 ring-[#E0218A]/15 scale-[1.02]'
                         : isPassed
                         ? 'bg-white border-black/10 hover:border-black/20'
                         : 'bg-white/80 border-black/5 hover:border-black/15 opacity-75'
@@ -194,7 +194,7 @@ export const HowItWorks: React.FC = () => {
                         <div
                           className={`w-8 h-8 rounded-full flex items-center justify-center font-mono text-xs font-bold transition-colors ${
                             isCurrent
-                              ? 'bg-[#10B981] text-white shadow-sm'
+                              ? 'bg-[#E0218A] text-white shadow-sm'
                               : isPassed
                               ? 'bg-[#111111] text-white'
                               : 'bg-[#F0F0F0] text-[#525252]'
@@ -205,7 +205,7 @@ export const HowItWorks: React.FC = () => {
                         <Icon
                           className={`w-4 h-4 ${
                             isCurrent
-                              ? 'text-[#10B981]'
+                              ? 'text-[#E0218A]'
                               : isPassed
                               ? 'text-neutral-700'
                               : 'text-neutral-400'
@@ -217,7 +217,7 @@ export const HowItWorks: React.FC = () => {
                       {isCurrent ? (
                         <div className="w-full bg-black/5 h-1 rounded-full mb-3 overflow-hidden">
                           <div
-                            className="bg-[#10B981] h-full transition-all duration-100"
+                            className="bg-[#E0218A] h-full transition-all duration-100"
                             style={{ width: `${stepProgress}%` }}
                           />
                         </div>
@@ -242,10 +242,10 @@ export const HowItWorks: React.FC = () => {
           <div className="p-6 bg-[#F7F7F7] rounded-2xl border border-black/5 grid grid-cols-1 md:grid-cols-12 gap-6 items-center mb-8">
             <div className="md:col-span-8 space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[#10B981]">
+                <span className="text-xs font-bold text-[#E0218A]">
                   Step {steps[activeStep].num}
                 </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E0218A]" />
                 <span className="text-sm font-semibold text-[#111111]">
                   {steps[activeStep].title}
                 </span>
@@ -260,10 +260,10 @@ export const HowItWorks: React.FC = () => {
           </div>
 
           {/* Crucial mandatory copy banner */}
-          <div className="relative p-6 sm:p-8 rounded-2xl bg-white border border-[#10B981]/30 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="relative p-6 sm:p-8 rounded-2xl bg-white border border-[#E0218A]/25 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start sm:items-center gap-3.5">
-              <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                <Clock className="w-5 h-5 text-emerald-600" />
+              <div className="w-9 h-9 rounded-full bg-[#FFE45C] text-amber-950 flex items-center justify-center shrink-0">
+                <Clock className="w-5 h-5" />
               </div>
               <p className="font-display font-bold text-base sm:text-lg md:text-xl text-[#111111] leading-snug">
                 If the landlord doesn't claim in time, the deposit returns to the tenant automatically.

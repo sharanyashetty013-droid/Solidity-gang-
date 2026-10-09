@@ -228,12 +228,12 @@ export const Features: React.FC = () => {
           }}
         >
           {/* Left Baseline Side */}
-          <div className="absolute inset-0 bg-white flex items-center justify-start p-3 sm:p-4">
-            <div className="w-full max-w-[210px] sm:max-w-[240px] h-full border border-dashed border-black/10 rounded-xl flex flex-col items-center justify-center px-2 text-center">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+          <div className="absolute inset-0 bg-white flex items-center justify-center p-4">
+            <div className="w-full h-full border border-dashed border-black/10 rounded-xl flex flex-col items-center justify-center">
+              <span className="text-xs font-bold text-neutral-400">
                 Move-in baseline
               </span>
-              <span className="text-xs text-emerald-600 font-semibold mt-0.5 whitespace-nowrap">
+              <span className="text-xs text-emerald-600 font-semibold mt-1">
                 Clean wall — Zero scuffs
               </span>
             </div>

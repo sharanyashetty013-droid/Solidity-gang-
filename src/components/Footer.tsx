@@ -17,9 +17,9 @@ export const Footer: React.FC<FooterProps> = () => {
             <div className="flex items-center gap-8 px-4 shrink-0">
               <span className="flex items-center gap-4">
                 <span>Walls don't lie.</span>
-                <span className="w-3 h-3 rounded-full bg-[#10B981] inline-block" />
+                <span className="w-3 h-3 rounded-full bg-[#E0218A] inline-block" />
               </span>
-              <span className="flex items-center gap-4 text-[#10B981]">
+              <span className="flex items-center gap-4 text-[#E0218A]">
                 <span>Proof on every wall. Deposit back in your hands.</span>
                 <span className="w-3 h-3 rounded-full bg-[#111111] inline-block" />
               </span>
@@ -28,9 +28,9 @@ export const Footer: React.FC<FooterProps> = () => {
             <div className="flex items-center gap-8 px-4 shrink-0" aria-hidden="true">
               <span className="flex items-center gap-4">
                 <span>Walls don't lie.</span>
-                <span className="w-3 h-3 rounded-full bg-[#10B981] inline-block" />
+                <span className="w-3 h-3 rounded-full bg-[#E0218A] inline-block" />
               </span>
-              <span className="flex items-center gap-4 text-[#10B981]">
+              <span className="flex items-center gap-4 text-[#E0218A]">
                 <span>Proof on every wall. Deposit back in your hands.</span>
                 <span className="w-3 h-3 rounded-full bg-[#111111] inline-block" />
               </span>
@@ -91,7 +91,7 @@ export const Footer: React.FC<FooterProps> = () => {
 
               {/* Col 2: Features */}
               <div className="space-y-3">
-                <span className="text-xs font-bold text-[#10B981] block">
+                <span className="text-xs font-bold text-[#E0218A] block">
                   Features
                 </span>
                 <ul className="space-y-2 text-sm text-[#525252]">
@@ -120,21 +120,10 @@ export const Footer: React.FC<FooterProps> = () => {
 
               {/* Col 3: Network */}
               <div className="space-y-3">
-                <span className="text-xs font-bold text-[#10B981] block">
+                <span className="text-xs font-bold text-[#E0218A] block">
                   Network
                 </span>
                 <ul className="space-y-2 text-sm text-[#525252]">
-                  <li>
-                    <a
-                      href="https://github.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-[#111111] transition-colors flex items-center gap-1"
-                    >
-                      <span>GitHub</span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </a>
-                  </li>
                   <li>
                     <a
                       href="https://sepolia.etherscan.io"

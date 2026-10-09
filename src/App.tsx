@@ -36,17 +36,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] p-2 sm:p-4 md:p-6 lg:p-8 font-body text-[#0F172A] antialiased selection:bg-[#10B981] selection:text-white flex flex-col items-center relative overflow-x-hidden">
-      {/* Ambient background glow */}
-      <div className="fixed inset-0 pointer-events-none -z-10">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-emerald-500/10 via-slate-800/10 to-transparent blur-3xl opacity-70" />
-      </div>
-
+    <div className="min-h-screen bg-[#FAD0EA] p-2 sm:p-4 md:p-6 lg:p-8 font-body text-[#111111] antialiased selection:bg-[#E0218A] selection:text-white flex flex-col items-center relative">
       {/* Page Load Intro: Self-drawing logo before revealing hero */}
       {!isLoaded && <PageLoader onComplete={handlePageLoadComplete} />}
 
       {/* Outer Floating Framed Container */}
-      <div className="w-full max-w-[1440px] bg-[#FAFAFC] rounded-[28px] sm:rounded-[36px] md:rounded-[44px] shadow-[0_24px_80px_rgba(0,0,0,0.35)] border border-white/10 overflow-clip flex flex-col relative">
+      <div className="w-full max-w-[1440px] bg-[#F7F7F7] rounded-[28px] sm:rounded-[36px] md:rounded-[44px] shadow-[0_16px_60px_rgba(0,0,0,0.06)] border border-black/5 overflow-clip flex flex-col relative">
         {/* Subtle background dotted grid spanning canvas */}
         <div className="absolute inset-0 bg-dotted-grid opacity-25 pointer-events-none" />
 

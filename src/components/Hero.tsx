@@ -75,11 +75,8 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
             </React.Suspense>
           </div>
 
-          {/* Layer 2: All Text & Actions - Placed directly with soft backdrop so text is crystal clear */}
+          {/* Layer 2: All Text & Actions - Placed directly UP ON / OVER TOP OF the home icon */}
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 pointer-events-none select-none">
-            {/* Soft luminous radial backdrop to ensure clean readability over the 3D shapes */}
-            <div className="absolute w-[90%] max-w-[620px] h-[340px] rounded-full bg-white/70 backdrop-blur-md -z-10 shadow-[0_0_60px_rgba(255,255,255,0.85)] pointer-events-none" />
-
             {/* Animated Section Label */}
             <motion.div
               initial={{ opacity: 0, y: -16 }}
@@ -96,16 +93,14 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="space-y-0.5 sm:space-y-1 mb-2.5 sm:mb-3 pointer-events-auto"
+              className="space-y-0.5 sm:space-y-1 mb-2.5 sm:mb-3"
             >
-              <div className="inline-block px-4 py-1 rounded-2xl bg-white/75 backdrop-blur-sm border border-black/5 shadow-xs">
-                <p className="font-display font-semibold text-lg sm:text-2xl md:text-3xl text-[#111111] tracking-tight leading-snug">
-                  Landlord keeping your deposit?
-                </p>
-                <p className="font-display font-semibold text-lg sm:text-2xl md:text-3xl text-[#111111] tracking-tight leading-snug">
-                  Tenant dodging repairs?
-                </p>
-              </div>
+              <p className="font-display font-medium text-lg sm:text-2xl md:text-3xl text-[#111111] tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(255,255,255,0.9)]">
+                Landlord keeping your deposit?
+              </p>
+              <p className="font-display font-medium text-lg sm:text-2xl md:text-3xl text-[#111111] tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(255,255,255,0.9)]">
+                Tenant dodging repairs?
+              </p>
             </motion.div>
 
             {/* Walls don't lie pill right on top of the house */}

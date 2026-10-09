@@ -19,7 +19,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
   return (
     <header className="sticky top-4 md:top-6 z-40 w-full px-4 sm:px-6 pointer-events-none">
       <div className="max-w-5xl mx-auto">
-        <nav className="pointer-events-auto bg-white/95 backdrop-blur-md px-5 sm:px-7 py-2.5 sm:py-3 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/5 flex items-center justify-between transition-all">
+        <nav className="pointer-events-auto bg-white/95 backdrop-blur-md px-5 sm:px-7 py-3 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/5 flex items-center justify-between transition-all">
           {/* Logo Left */}
           <a
             href="#"
@@ -42,17 +42,14 @@ export const Navbar: React.FC<NavbarProps> = () => {
             ))}
           </div>
 
-          {/* Right Area: Mobile Menu Trigger (Desktop links are clean and centered) */}
-          <div className="flex items-center md:hidden">
-            {/* Mobile menu trigger */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-[#111111] hover:bg-black/5 transition-colors cursor-pointer"
-              aria-label="Toggle mobile menu"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+          {/* Mobile menu trigger */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-[#111111] hover:bg-black/5 transition-colors"
+            aria-label="Toggle mobile menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </nav>
 
         {/* Mobile dropdown menu */}
