@@ -41,7 +41,7 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
 
     // Frame the pink house, yellow sphere and purple ring nicely in center
-    const initialZ = width < 640 ? 11.5 : width < 1024 ? 10.0 : 9.2;
+    const initialZ = width < 640 ? 10.6 : width < 1024 ? 9.4 : 8.6;
     camera.position.set(0, 0, initialZ);
 
     const renderer = new THREE.WebGLRenderer({
@@ -57,8 +57,9 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
     renderer.toneMappingExposure = 1.15;
     container.appendChild(renderer.domElement);
 
-    // Root Group for 3D elements
+    // Root Group for 3D elements (scaled up for bigger presence)
     const sceneGroup = new THREE.Group();
+    sceneGroup.scale.set(1.22, 1.22, 1.22);
     scene.add(sceneGroup);
 
     // 1. Glossy Glass/Clearcoat Magenta 3D House Object
@@ -214,7 +215,7 @@ export const Hero3DScene: React.FC<Hero3DSceneProps> = React.memo(({ className =
       const w = container.clientWidth || 800;
       const h = container.clientHeight || 460;
       camera.aspect = w / h;
-      camera.position.z = w < 640 ? 11.5 : width < 1024 ? 10.0 : 9.2;
+      camera.position.z = w < 640 ? 10.6 : w < 1024 ? 9.4 : 8.6;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };

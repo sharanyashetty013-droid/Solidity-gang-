@@ -126,17 +126,6 @@ export const Footer: React.FC<FooterProps> = () => {
                 <ul className="space-y-2 text-sm text-[#525252]">
                   <li>
                     <a
-                      href="https://github.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-[#111111] transition-colors flex items-center gap-1"
-                    >
-                      <span>GitHub</span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </a>
-                  </li>
-                  <li>
-                    <a
                       href="https://sepolia.etherscan.io"
                       target="_blank"
                       rel="noopener noreferrer"
