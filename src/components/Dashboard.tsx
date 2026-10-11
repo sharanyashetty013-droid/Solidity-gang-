@@ -496,7 +496,7 @@ const StatCardsSkeleton: React.FC = () => (
 );
 
 /* ---------- FADE-IN HELPER ---------- */
-const FadeIn: React.FC<{ delay?: number; children: React.ReactNode }> = ({ delay = 0, children }) => (
+export const FadeIn: React.FC<{ delay?: number; children: React.ReactNode }> = ({ delay = 0, children }) => (
   <motion.div
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
@@ -507,7 +507,7 @@ const FadeIn: React.FC<{ delay?: number; children: React.ReactNode }> = ({ delay
 );
 
 /* ---------- SHARED PAGE SHELL (background + glass frame + sidebar) ---------- */
-const PageShell: React.FC<{ role: Role; children: React.ReactNode }> = ({ role, children }) => (
+export const PageShell: React.FC<{ role: Role; children: React.ReactNode }> = ({ role, children }) => (
   <div className="relative overflow-hidden min-h-screen bg-gradient-to-br from-[#F7F7F7] via-[#FBEAF3] to-[#FAD0EA] p-4 sm:p-8 flex justify-center">
     {/* Soft pink glow behind the glass */}
     <div className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-[#E0218A]/20 blur-3xl" />
