@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import {
   LayoutDashboard,
   FileText,
@@ -393,6 +394,17 @@ const EvidenceCard: React.FC = () => (
   </div>
 );
 
+/* ---------- FADE-IN HELPER ---------- */
+const FadeIn: React.FC<{ delay?: number; children: React.ReactNode }> = ({ delay = 0, children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 16 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay }}
+  >
+    {children}
+  </motion.div>
+);
+
 /* ---------- PAGE ---------- */
 export const Dashboard: React.FC = () => {
   return (
@@ -406,12 +418,12 @@ export const Dashboard: React.FC = () => {
             <div className="relative z-10 w-full max-w-[1440px] bg-white/40 backdrop-blur-2xl border border-white/60 shadow-[0_8px_40px_rgba(108,60,240,0.18)] rounded-[36px] p-4 sm:p-6 flex gap-6 [&_.bg-white]:bg-white/60 [&_.bg-white]:backdrop-blur-xl [&_.bg-white]:border [&_.bg-white]:border-white/70">
         <Sidebar />
         <main className="flex-1 flex flex-col gap-5 min-w-0">
-          <TopBar />
-          <ActionNeededCard />
-          <StatCards />
-          <DepositTimeline />
-          <RecentActivity />
-          <EvidenceCard />
+                    <FadeIn><TopBar /></FadeIn>
+          <FadeIn delay={0.08}><ActionNeededCard /></FadeIn>
+          <FadeIn delay={0.16}><StatCards /></FadeIn>
+          <FadeIn delay={0.24}><DepositTimeline /></FadeIn>
+          <FadeIn delay={0.32}><RecentActivity /></FadeIn>
+          <FadeIn delay={0.4}><EvidenceCard /></FadeIn>
         </main>
       </div>
     </div>
