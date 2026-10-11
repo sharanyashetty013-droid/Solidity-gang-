@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import {
   LayoutDashboard,
@@ -17,6 +18,7 @@ import {
   Clock,
   Check,
   ExternalLink,
+  Home,
 } from 'lucide-react';
 
 /* ---------- SAMPLE DATA (replaced by real wallet/contract data later) ---------- */
@@ -27,11 +29,12 @@ const agreement = { claimPeriodDays: 14 };
 const PREVIEW_EMPTY = false;
 // SAMPLE: set to true to preview the loading skeleton
 const PREVIEW_LOADING = false;
+
 type Role = 'Tenant' | 'Landlord';
+
 const sample = {
   address: '0x12ab…89cd',
   chainId: '0xaa36a7', // change to '0x1' to preview the wrong-network warning
-  role: 'Tenant' as 'Tenant' | 'Landlord',
 };
 
 const actionNeeded = {
@@ -48,32 +51,37 @@ const actionNeeded = {
 };
 
 const menuItems = [
-  { name: 'Dashboard', icon: LayoutDashboard },
-  { name: 'Agreements', icon: FileText },
-  { name: 'Evidence', icon: Camera },
-  { name: 'Claims', icon: ClipboardList },
-  { name: 'Disputes', icon: Scale },
+  { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+  { name: 'Agreements', path: '/agreements', icon: FileText },
+  { name: 'Evidence', path: '/evidence', icon: Camera },
+  { name: 'Claims', path: '/claims', icon: ClipboardList },
+  { name: 'Disputes', path: '/disputes', icon: Scale },
 ];
 
 /* ---------- SIDEBAR ---------- */
 const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
-  const [active, setActive] = useState('Dashboard');
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   return (
     <aside className="w-64 shrink-0 bg-white rounded-3xl p-5 flex flex-col justify-between shadow-sm">
       <div>
         <div className="flex items-center gap-2 px-2 mb-8">
-         <img src="/logo.jpeg" alt="Walls Don't Lie logo" className="w-10 h-10 rounded-xl object-cover mix-blend-multiply" />
+          <img
+            src="/logo.jpeg"
+            alt="Walls Don't Lie logo"
+            className="w-10 h-10 rounded-xl object-cover mix-blend-multiply"
+          />
           <span className="text-lg font-bold text-[#1B1340]">Walls Don't Lie</span>
         </div>
 
         <nav className="flex flex-col gap-2">
-          {menuItems.map(({ name, icon: Icon }) => (
+          {menuItems.map(({ name, path, icon: Icon }) => (
             <button
               key={name}
-              onClick={() => setActive(name)}
+              onClick={() => navigate(path)}
               className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-colors ${
-                active === name
+                pathname === path
                   ? 'bg-[#6C3CF0] text-white shadow-md'
                   : 'text-[#8A86A3] hover:bg-[#F3EFFF]'
               }`}
@@ -85,18 +93,28 @@ const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
         </nav>
       </div>
 
-      <div className="bg-[#F3EFFF] rounded-2xl p-4 text-center">
-        <div className="w-14 h-14 mx-auto rounded-full bg-[#6C3CF0]/15 flex items-center justify-center">
-          <ShieldCheck className="w-7 h-7 text-[#6C3CF0]" />
+      <div>
+        <button
+          onClick={() => navigate('/')}
+          className="mb-4 w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-[#6C3CF0] bg-white/70 border border-white hover:bg-[#F3EFFF] transition-colors"
+        >
+          <Home className="w-5 h-5" />
+          Back to home
+        </button>
+
+        <div className="bg-[#F3EFFF] rounded-2xl p-4 text-center">
+          <div className="w-14 h-14 mx-auto rounded-full bg-[#6C3CF0]/15 flex items-center justify-center">
+            <ShieldCheck className="w-7 h-7 text-[#6C3CF0]" />
+          </div>
+          <p className="mt-2 text-sm font-semibold text-[#1B1340]">{sample.address}</p>
+          <p className="text-xs text-[#8A86A3]">Role: {role}</p>
+          <button className="mt-3 w-full py-2 rounded-xl bg-white text-xs font-semibold text-[#6C3CF0]">
+            View profile
+          </button>
+          <button className="mt-2 flex items-center justify-center gap-2 w-full text-xs text-[#8A86A3]">
+            <LogOut className="w-4 h-4" /> Logout
+          </button>
         </div>
-        <p className="mt-2 text-sm font-semibold text-[#1B1340]">{sample.address}</p>
-        <p className="text-xs text-[#8A86A3]">Role: {role}</p>
-        <button className="mt-3 w-full py-2 rounded-xl bg-white text-xs font-semibold text-[#6C3CF0]">
-          View profile
-        </button>
-        <button className="mt-2 flex items-center justify-center gap-2 w-full text-xs text-[#8A86A3]">
-          <LogOut className="w-4 h-4" /> Logout
-        </button>
       </div>
     </aside>
   );
@@ -170,7 +188,7 @@ const ActionNeededCard: React.FC<{ role: Role }> = ({ role }) => {
         <h2 className="mt-1 text-xl font-bold">{action.title}</h2>
         <p className="mt-1 text-sm text-white/80">{action.detail}</p>
       </div>
-            <button className="flex items-center gap-2 px-5 py-2.5 rounded-full !bg-white !backdrop-blur-none text-[#6C3CF0] text-sm font-semibold shadow-md hover:scale-105 transition-transform">
+      <button className="flex items-center gap-2 px-5 py-2.5 rounded-full !bg-white !backdrop-blur-none text-[#6C3CF0] text-sm font-semibold shadow-md hover:scale-105 transition-transform">
         {action.button} <ArrowRight className="w-4 h-4" />
       </button>
     </div>
@@ -187,7 +205,10 @@ const stats = [
 const StatCards: React.FC = () => (
   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
     {stats.map(({ label, value, note, icon: Icon }) => (
-      <div key={label} className="bg-white rounded-2xl p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[#6C3CF0]/20">
+      <div
+        key={label}
+        className="bg-white rounded-2xl p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[#6C3CF0]/20"
+      >
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium text-[#8A86A3]">{label}</p>
           <span className="w-9 h-9 rounded-full bg-[#F3EFFF] flex items-center justify-center">
@@ -216,7 +237,7 @@ const DepositTimeline: React.FC = () => (
     <h2 className="text-lg font-bold text-[#1B1340]">Deposit timeline</h2>
     <p className="text-xs text-[#8A86A3] mt-1">Agreement: 2BHK, Indiranagar (sample)</p>
 
-        <div className="mt-3 pt-3 pb-2 px-2 overflow-x-auto">
+    <div className="mt-3 pt-3 pb-2 px-2 overflow-x-auto">
       <ol className="flex min-w-[560px]">
         {timelineSteps.map((step, i) => {
           const done = i < currentStep;
@@ -313,12 +334,9 @@ const RecentActivity: React.FC = () => (
         <p className="text-xs">Create an agreement to get started.</p>
       </div>
     )}
-    
-        <ul className="mt-4 divide-y divide-[#EFEBFA]">
+
+    <ul className="mt-4 divide-y divide-[#EFEBFA]">
       {(PREVIEW_EMPTY ? [] : activity).map((item) => (
-        
-       
-      
         <li key={item.title} className="py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[#1B1340]">{item.title}</p>
@@ -479,3 +497,22 @@ export const Dashboard: React.FC = () => {
     </div>
   );
 };
+
+/* ---------- COMING SOON PAGE (placeholder for other sections) ---------- */
+export const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
+  <div className="relative overflow-hidden min-h-screen bg-gradient-to-br from-[#CFC6F5] via-[#E6DDFB] to-[#F8D6E6] p-4 sm:p-8 flex justify-center">
+    <div className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-[#6C3CF0]/40 blur-3xl" />
+    <div className="pointer-events-none absolute top-1/3 -right-24 w-[380px] h-[380px] rounded-full bg-[#F0507A]/30 blur-3xl" />
+
+    <div className="relative z-10 w-full max-w-[1440px] bg-white/40 backdrop-blur-2xl border border-white/60 shadow-[0_8px_40px_rgba(108,60,240,0.18)] rounded-[36px] p-4 sm:p-6 flex gap-6 [&_.bg-white]:bg-white/60 [&_.bg-white]:backdrop-blur-xl [&_.bg-white]:border [&_.bg-white]:border-white/70">
+      <Sidebar role="Tenant" />
+      <main className="flex-1 flex flex-col gap-5 min-w-0">
+        <h1 className="text-3xl font-bold text-[#1B1340]">{title}</h1>
+        <div className="bg-white rounded-3xl p-10 shadow-sm text-center">
+          <p className="text-lg font-bold text-[#1B1340]">Coming soon</p>
+          <p className="mt-1 text-sm text-[#8A86A3]">This section will be built next.</p>
+        </div>
+      </main>
+    </div>
+  </div>
+);
