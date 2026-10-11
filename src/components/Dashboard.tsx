@@ -25,6 +25,8 @@ const SEPOLIA_CHAIN_ID = '0xaa36a7';
 const agreement = { claimPeriodDays: 14 };
 // SAMPLE: set to true to preview how a fresh wallet looks
 const PREVIEW_EMPTY = false;
+// SAMPLE: set to true to preview the loading skeleton
+const PREVIEW_LOADING = false;
 const sample = {
   address: '0x12ab…89cd',
   chainId: '0xaa36a7', // change to '0x1' to preview the wrong-network warning
@@ -313,6 +315,8 @@ const RecentActivity: React.FC = () => (
     
         <ul className="mt-4 divide-y divide-[#EFEBFA]">
       {(PREVIEW_EMPTY ? [] : activity).map((item) => (
+        
+       
       
         <li key={item.title} className="py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
@@ -405,6 +409,22 @@ const EvidenceCard: React.FC = () => (
   </div>
 );
 
+/* ---------- LOADING SKELETON ---------- */
+const StatCardsSkeleton: React.FC = () => (
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 animate-pulse">
+    {[0, 1, 2].map((i) => (
+      <div key={i} className="bg-white rounded-2xl p-5 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="h-3 w-24 rounded bg-[#E6DDFB]" />
+          <div className="w-9 h-9 rounded-full bg-[#E6DDFB]" />
+        </div>
+        <div className="mt-4 h-7 w-28 rounded bg-[#E6DDFB]" />
+        <div className="mt-3 h-3 w-36 rounded bg-[#EFEBFA]" />
+      </div>
+    ))}
+  </div>
+);
+
 /* ---------- FADE-IN HELPER ---------- */
 const FadeIn: React.FC<{ delay?: number; children: React.ReactNode }> = ({ delay = 0, children }) => (
   <motion.div
@@ -431,7 +451,7 @@ export const Dashboard: React.FC = () => {
         <main className="flex-1 flex flex-col gap-5 min-w-0">
                     <FadeIn><TopBar /></FadeIn>
           <FadeIn delay={0.08}><ActionNeededCard /></FadeIn>
-          <FadeIn delay={0.16}><StatCards /></FadeIn>
+          <FadeIn delay={0.16}>{PREVIEW_LOADING ? <StatCardsSkeleton /> : <StatCards />}</FadeIn>
           <FadeIn delay={0.24}><DepositTimeline /></FadeIn>
           <FadeIn delay={0.32}><RecentActivity /></FadeIn>
           <FadeIn delay={0.4}><EvidenceCard /></FadeIn>
