@@ -7,7 +7,6 @@ import { HowItWorks } from './components/HowItWorks';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { PageLoader } from './components/PageLoader';
-import { Dashboard } from './components/Dashboard';
 
 export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -35,10 +34,6 @@ export default function App() {
       setToastMessage(null);
     }, 3200);
   };
-    // Temporary preview: open http://localhost:3000/#/dashboard
-  if (window.location.hash === '#/dashboard') {
-    return <Dashboard />;
-  }
 
   return (
     <div className="min-h-screen bg-[#FAD0EA] p-2 sm:p-4 md:p-6 lg:p-8 font-body text-[#111111] antialiased selection:bg-[#E0218A] selection:text-white flex flex-col items-center relative">
