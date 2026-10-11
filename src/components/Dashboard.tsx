@@ -23,6 +23,8 @@ import {
 const SEPOLIA_CHAIN_ID = '0xaa36a7';
 // SAMPLE: will come from the uploaded agreement later
 const agreement = { claimPeriodDays: 14 };
+// SAMPLE: set to true to preview how a fresh wallet looks
+const PREVIEW_EMPTY = false;
 const sample = {
   address: '0x12ab…89cd',
   chainId: '0xaa36a7', // change to '0x1' to preview the wrong-network warning
@@ -211,7 +213,7 @@ const DepositTimeline: React.FC = () => (
     <h2 className="text-lg font-bold text-[#1B1340]">Deposit timeline</h2>
     <p className="text-xs text-[#8A86A3] mt-1">Agreement: 2BHK, Indiranagar (sample)</p>
 
-    <div className="mt-6 overflow-x-auto">
+        <div className="mt-3 pt-3 pb-2 px-2 overflow-x-auto">
       <ol className="flex min-w-[560px]">
         {timelineSteps.map((step, i) => {
           const done = i < currentStep;
@@ -301,8 +303,17 @@ const RecentActivity: React.FC = () => (
       <span className="text-xs font-semibold text-[#6C3CF0]">View all</span>
     </div>
 
-    <ul className="mt-4 divide-y divide-[#EFEBFA]">
-      {activity.map((item) => (
+    {PREVIEW_EMPTY && (
+      <div className="mt-6 mb-2 flex flex-col items-center text-center text-[#8A86A3]">
+        <ClipboardList className="w-8 h-8" />
+        <p className="mt-2 text-sm font-semibold text-[#1B1340]">No activity yet</p>
+        <p className="text-xs">Create an agreement to get started.</p>
+      </div>
+    )}
+    
+        <ul className="mt-4 divide-y divide-[#EFEBFA]">
+      {(PREVIEW_EMPTY ? [] : activity).map((item) => (
+      
         <li key={item.title} className="py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[#1B1340]">{item.title}</p>
