@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -10,6 +11,7 @@ import { PageLoader } from './components/PageLoader';
 
 export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(() => {
     if (typeof window !== 'undefined') {
       return sessionStorage.getItem('wdl_loaded') === 'true';
@@ -29,10 +31,7 @@ export default function App() {
   };
 
   const handleLaunchApp = () => {
-    setToastMessage('Coming soon on Sepolia');
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3200);
+  navigate('/dashboard');
   };
 
   return (
