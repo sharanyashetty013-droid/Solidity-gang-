@@ -7,15 +7,22 @@ import { HowItWorks } from './components/HowItWorks';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { PageLoader } from './components/PageLoader';
+import { Agreements } from './components/Agreements';
 
 export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   const [isLoaded, setIsLoaded] = useState(() => {
     if (typeof window !== 'undefined') {
       return sessionStorage.getItem('wdl_loaded') === 'true';
     }
     return false;
   });
+
+  // Agreements page route
+  if (window.location.hash === '#/agreements') {
+    return <Agreements />;
+  }
 
   const handlePageLoadComplete = () => {
     if (typeof window !== 'undefined') {
