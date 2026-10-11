@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -7,10 +8,10 @@ import { HowItWorks } from './components/HowItWorks';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { PageLoader } from './components/PageLoader';
-import { Dashboard } from './components/Dashboard';
 
 export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(() => {
     if (typeof window !== 'undefined') {
       return sessionStorage.getItem('wdl_loaded') === 'true';
@@ -30,15 +31,8 @@ export default function App() {
   };
 
   const handleLaunchApp = () => {
-    setToastMessage('Coming soon on Sepolia');
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3200);
+  navigate('/dashboard');
   };
-    // Temporary preview: open http://localhost:3000/#/dashboard
-  if (window.location.hash === '#/dashboard') {
-    return <Dashboard />;
-  }
 
   return (
     <div className="min-h-screen bg-[#FAD0EA] p-2 sm:p-4 md:p-6 lg:p-8 font-body text-[#111111] antialiased selection:bg-[#E0218A] selection:text-white flex flex-col items-center relative">
