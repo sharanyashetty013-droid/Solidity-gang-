@@ -27,6 +27,7 @@ const agreement = { claimPeriodDays: 14 };
 const PREVIEW_EMPTY = false;
 // SAMPLE: set to true to preview the loading skeleton
 const PREVIEW_LOADING = false;
+type Role = 'Tenant' | 'Landlord';
 const sample = {
   address: '0x12ab…89cd',
   chainId: '0xaa36a7', // change to '0x1' to preview the wrong-network warning
@@ -55,7 +56,7 @@ const menuItems = [
 ];
 
 /* ---------- SIDEBAR ---------- */
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
   const [active, setActive] = useState('Dashboard');
 
   return (
@@ -89,7 +90,7 @@ const Sidebar: React.FC = () => {
           <ShieldCheck className="w-7 h-7 text-[#6C3CF0]" />
         </div>
         <p className="mt-2 text-sm font-semibold text-[#1B1340]">{sample.address}</p>
-        <p className="text-xs text-[#8A86A3]">Role: {sample.role}</p>
+        <p className="text-xs text-[#8A86A3]">Role: {role}</p>
         <button className="mt-3 w-full py-2 rounded-xl bg-white text-xs font-semibold text-[#6C3CF0]">
           View profile
         </button>
@@ -159,8 +160,8 @@ const TopBar: React.FC = () => {
 };
 
 /* ---------- ACTION NEEDED CARD ---------- */
-const ActionNeededCard: React.FC = () => {
-  const action = actionNeeded[sample.role];
+const ActionNeededCard: React.FC<{ role: Role }> = ({ role }) => {
+  const action = actionNeeded[role];
 
   return (
     <div className="rounded-3xl bg-gradient-to-br from-[#6C3CF0] to-[#8C5CFF] text-white p-6 shadow-md flex flex-wrap items-center justify-between gap-4">
@@ -234,7 +235,7 @@ const DepositTimeline: React.FC = () => (
                   done
                     ? 'bg-[#6C3CF0] text-white'
                     : current
-                    ? 'bg-white border-2 border-[#6C3CF0] text-[#6C3CF0] ring-4 ring-[#6C3CF0]/25 animate-pulse shadow-[0_0_16px_rgba(108,60,240,0.55)]'
+                    ? '!bg-white !backdrop-blur-none border-2 border-[#6C3CF0] text-[#6C3CF0] ring-4 ring-[#6C3CF0]/25 shadow-[0_0_16px_rgba(108,60,240,0.55)]'
                     : 'bg-[#F3EFFF] text-[#8A86A3]'
                 }`}
               >
@@ -438,6 +439,8 @@ const FadeIn: React.FC<{ delay?: number; children: React.ReactNode }> = ({ delay
 
 /* ---------- PAGE ---------- */
 export const Dashboard: React.FC = () => {
+  const [role, setRole] = useState<Role>('Tenant');
+
   return (
     <div className="relative overflow-hidden min-h-screen bg-gradient-to-br from-[#CFC6F5] via-[#E6DDFB] to-[#F8D6E6] p-4 sm:p-8 flex justify-center">
       {/* Glowing blobs behind the glass */}
@@ -446,11 +449,27 @@ export const Dashboard: React.FC = () => {
       <div className="pointer-events-none absolute -bottom-24 left-1/3 w-[400px] h-[400px] rounded-full bg-[#8C5CFF]/35 blur-3xl" />
 
       {/* Glass frame */}
-            <div className="relative z-10 w-full max-w-[1440px] bg-white/40 backdrop-blur-2xl border border-white/60 shadow-[0_8px_40px_rgba(108,60,240,0.18)] rounded-[36px] p-4 sm:p-6 flex gap-6 [&_.bg-white]:bg-white/60 [&_.bg-white]:backdrop-blur-xl [&_.bg-white]:border [&_.bg-white]:border-white/70">
-        <Sidebar />
+      <div className="relative z-10 w-full max-w-[1440px] bg-white/40 backdrop-blur-2xl border border-white/60 shadow-[0_8px_40px_rgba(108,60,240,0.18)] rounded-[36px] p-4 sm:p-6 flex gap-6 [&_.bg-white]:bg-white/60 [&_.bg-white]:backdrop-blur-xl [&_.bg-white]:border [&_.bg-white]:border-white/70">
+        <Sidebar role={role} />
         <main className="flex-1 flex flex-col gap-5 min-w-0">
-                    <FadeIn><TopBar /></FadeIn>
-          <FadeIn delay={0.08}><ActionNeededCard /></FadeIn>
+          {/* Preview toggle (demo only) */}
+          <div className="self-start flex items-center gap-1 bg-white rounded-full p-1 shadow-sm text-xs font-semibold">
+            <span className="px-3 text-[#8A86A3]">Preview as</span>
+            {(['Tenant', 'Landlord'] as Role[]).map((r) => (
+              <button
+                key={r}
+                onClick={() => setRole(r)}
+                className={`px-4 py-1.5 rounded-full transition-colors ${
+                  role === r ? 'bg-[#6C3CF0] text-white shadow-md' : 'text-[#6C3CF0] hover:bg-[#F3EFFF]'
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+
+          <FadeIn><TopBar /></FadeIn>
+          <FadeIn delay={0.08}><ActionNeededCard role={role} /></FadeIn>
           <FadeIn delay={0.16}>{PREVIEW_LOADING ? <StatCardsSkeleton /> : <StatCards />}</FadeIn>
           <FadeIn delay={0.24}><DepositTimeline /></FadeIn>
           <FadeIn delay={0.32}><RecentActivity /></FadeIn>
