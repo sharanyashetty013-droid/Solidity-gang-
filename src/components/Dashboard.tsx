@@ -508,7 +508,6 @@ const FadeIn: React.FC<{ delay?: number; children: React.ReactNode }> = ({ delay
 
 /* ---------- SHARED PAGE SHELL (background + glass frame + sidebar) ---------- */
 export const PageShell: React.FC<{ role: Role; children: React.ReactNode }> = ({ role, children }) => (
-export const PageShell: React.FC<{ role: Role; children: React.ReactNode }> = ({ role, children }) => (
   <div className="relative overflow-hidden min-h-screen bg-gradient-to-br from-[#F7F7F7] via-[#FBEAF3] to-[#FAD0EA] p-4 sm:p-8 flex justify-center">
     {/* Soft pink glow behind the glass */}
     <div className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-[#E0218A]/20 blur-3xl" />
@@ -570,6 +569,14 @@ export const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
       <p className="text-lg font-bold text-[#111111]">Coming soon</p>
       <p className="mt-1 text-sm text-[#6B6B6B]">This section will be built next.</p>
     </div>
+  </PageShell>
+);
+
+export const DashboardPageLayout: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <PageShell role="Tenant">
+    {children}
   </PageShell>
 );
 

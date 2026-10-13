@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
+import { PageShell } from './Dashboard';
 import {
   motion,
   AnimatePresence,
@@ -296,81 +297,12 @@ export function Agreements() {
     : { duration: 0.4, ease: 'easeOut' as const };
 
   return (
-    <div className="min-h-screen bg-[#F9F1F6] px-3 py-4 text-[#242024] sm:px-6 sm:py-6 lg:px-9">
-      <div className="mx-auto max-w-[1440px]">
-        {/* Top navigation */}
-        <motion.header
-          initial={reduceMotion ? false : { opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={pageTransition}
-          className="mb-7 flex flex-wrap items-center justify-between gap-4"
-        >
-          <a
-            href="/"
-            className="flex items-center gap-3"
-            aria-label="Walls Don't Lie home"
-          >
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E0218A] text-white shadow-lg shadow-pink-200">
-              <Home size={22} />
-            </div>
-            <div>
-              <p className="text-base font-extrabold tracking-tight">
-                walls<span className="text-[#E0218A]">don't</span>lie
-              </p>
-              <p className="text-[11px] text-[#89808A]">
-                Rental management
-              </p>
-            </div>
-          </a>
+    <PageShell role={role}>
+      <div className="w-full min-w-0 text-[#242024]">
 
-          <div className="flex items-center gap-3">
-            <span className="hidden text-xs text-[#817782] sm:inline">
-              Viewing workspace
-            </span>
-
-            <div className="flex rounded-full border border-[#EEE3EB] bg-white p-1 shadow-sm">
-              {(['Tenant', 'Landlord'] as const).map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setRole(item)}
-                  className={`relative flex min-h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors ${
-                    role === item
-                      ? 'text-white'
-                      : 'text-[#777079] hover:text-[#E0218A]'
-                  }`}
-                >
-                  {role === item && (
-                    <motion.span
-                      layoutId="role-switch"
-                      className="absolute inset-0 rounded-full bg-[#E0218A]"
-                      transition={{
-                        type: 'spring',
-                        stiffness: 380,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-                  <span className="relative z-10">
-                    {item === 'Tenant' ? (
-                      <Home size={15} />
-                    ) : (
-                      <KeyRound size={15} />
-                    )}
-                  </span>
-                  <span className="relative z-10">{item}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="hidden h-10 w-10 items-center justify-center rounded-full bg-[#F2D6E7] text-sm font-bold text-[#9B286D] sm:flex">
-              {role === 'Tenant' ? 'AS' : 'PN'}
-            </div>
-          </div>
-        </motion.header>
 
         {/* Breadcrumb */}
-        <div className="mb-5 flex items-center gap-2 text-xs text-[#948994]">
+        <div className="mb-4 flex items-center gap-2 text-xs text-[#948994]">
           <span>Workspace</span>
           <span>/</span>
           <span className="font-semibold text-[#4A4049]">Agreements</span>
@@ -969,7 +901,7 @@ export function Agreements() {
                   </span>
                   <span className="flex items-center gap-1.5 text-xs text-[#8C808B]">
                     <CalendarDays size={14} />
-                    {selected.startDate} – {selected.endDate}
+                    {selected.startDate} → {selected.endDate}
                   </span>
                 </div>
 
@@ -1152,7 +1084,7 @@ export function Agreements() {
                   </label>
 
                   <label className="text-xs font-semibold text-[#675A65]">
-                    Monthly rent (₹)
+                    Monthly rent (G∩┐╜)
                     <input
                       required
                       type="number"
@@ -1168,7 +1100,7 @@ export function Agreements() {
                   </label>
 
                   <label className="text-xs font-semibold text-[#675A65]">
-                    Security deposit (₹)
+                    Security deposit (G∩┐╜)
                     <input
                       required
                       type="number"
@@ -1253,7 +1185,7 @@ export function Agreements() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </PageShell>
   );
 }
 
