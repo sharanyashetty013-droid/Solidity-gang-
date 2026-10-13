@@ -8,6 +8,7 @@ import {
   ComingSoon,
 } from './components/Dashboard';
 import Agreements from './components/Agreements';
+import Claims from './components/Claims';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -15,9 +16,17 @@ createRoot(document.getElementById('root')!).render(
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="/dashboard" element={<Dashboard />} />
-     <Route path="/agreements" element={<Agreements />} />
+      <Route path="/agreements" element={<Agreements />} />
+     
       <Route path="/evidence" element={<EvidencePage />} />
-      <Route path="/claims" element={<ComingSoon title="Claims" />} />
+     <Route
+       path="/claims"
+       element={
+      <DashboardPageLayout>
+      <Claims />
+     </DashboardPageLayout>
+  }
+/>
       <Route path="/disputes" element={<ComingSoon title="Disputes" />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
