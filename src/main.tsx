@@ -11,6 +11,7 @@ import { DisputesPage } from './components/Disputes';
 import Agreements from './components/Agreements';
 import Claims from './components/Claims';
 import AgreementView from './components/AgreementView';
+import OnChainAgreements from './components/OnChainAgreements';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')!).render(
       />
       <Route path="/disputes" element={<DisputesPage />} />
       <Route path="/agreement/:id" element={<DashboardPageLayout><AgreementView /></DashboardPageLayout>} />
+      <Route path="/on-chain" element={<DashboardPageLayout><OnChainAgreements /></DashboardPageLayout>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </HashRouter>
