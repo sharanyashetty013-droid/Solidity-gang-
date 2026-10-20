@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { formatEther } from 'ethers';
+import { formatEther, parseEther } from 'ethers';
 import { useWallet } from '../hooks/useWallet';
 import { readContract, writeContract, STATES } from '../lib/contract';
 
@@ -11,6 +11,9 @@ export default function AgreementView() {
   const [arbiter, setArbiter] = useState('');
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
+  const [claimName, setClaimName] = useState('');
+  const [claimAmt, setClaimAmt] = useState('');
+  const [deadline, setDeadline] = useState(0);
   const [file, setFile] = useState<File | null>(null);
 
   const load = useCallback(async () => {
@@ -18,6 +21,7 @@ export default function AgreementView() {
       const c = readContract();
       setA(await c.getAgreement(BigInt(id || '0')));
       setArbiter(await c.arbiter());
+      setDeadline(Number(await c.claimDeadline(BigInt(id || '0'))));
       setMsg('');
     } catch (e: any) {
       setMsg('Could not load agreement: ' + (e?.shortMessage || e?.message));
@@ -73,6 +77,41 @@ export default function AgreementView() {
     }
   };
 
+  const doCheckout = async () => {
+    try {
+      setBusy(true);
+      setMsg('Confirm in MetaMask...');
+      const c = await writeContract();
+      const tx = await c.requestCheckout(BigInt(id || '0'));
+      setMsg('Waiting for confirmation...');
+      await tx.wait();
+      setMsg('Checkout requested. Tx: https://sepolia.etherscan.io/tx/' + tx.hash);
+      await load();
+    } catch (e: any) {
+      setMsg('Failed: ' + (e?.shortMessage || e?.message));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doClaim = async () => {
+    try {
+      if (!claimName || !claimAmt) { setMsg('Enter an item name and amount'); return; }
+      setBusy(true);
+      setMsg('Confirm in MetaMask...');
+      const c = await writeContract();
+      const tx = await c.submitClaim(BigInt(id || '0'), [{ name: claimName, amount: parseEther(claimAmt) }]);
+      setMsg('Waiting for confirmation...');
+      await tx.wait();
+      setMsg('Claim submitted. Tx: https://sepolia.etherscan.io/tx/' + tx.hash);
+      await load();
+    } catch (e: any) {
+      setMsg('Failed: ' + (e?.shortMessage || e?.message));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const row = 'flex justify-between gap-4 py-3 border-b border-black/5 text-sm';
 
   return (
@@ -101,6 +140,32 @@ export default function AgreementView() {
                 {busy ? 'Working...' : 'Submit move-in evidence'}
               </button>
             </div>
+          )}
+          {state === 2 && role === 'Tenant' && (
+            <div className="mt-6">
+              <p className="text-sm text-[#6B6B6B] mb-2">Ready to move out? This starts the landlord's claim window.</p>
+              <button onClick={doCheckout} disabled={busy} className="px-6 py-3 rounded-full bg-[#E0218A] text-white text-sm font-semibold disabled:opacity-60">
+                {busy ? 'Working...' : 'Request checkout'}
+              </button>
+            </div>
+          )}
+          {state === 2 && role !== 'Tenant' && (
+            <p className="mt-6 text-sm text-[#6B6B6B]">Tenancy is active. Waiting for the tenant to request checkout.</p>
+          )}
+          {state === 3 && (
+            <p className="mt-6 text-sm text-[#6B6B6B]">Claim window ends at {deadline ? new Date(deadline * 1000).toLocaleTimeString() : '...'}</p>
+          )}
+          {state === 3 && role === 'Landlord' && (
+            <div className="mt-4">
+              <input value={claimName} onChange={(e) => setClaimName(e.target.value)} placeholder="Item (e.g. Wall damage)" className="block w-full border border-black/10 rounded-lg px-3 py-2 text-sm" />
+              <input value={claimAmt} onChange={(e) => setClaimAmt(e.target.value)} placeholder="Amount in ETH (max deposit)" className="mt-2 block w-full border border-black/10 rounded-lg px-3 py-2 text-sm" />
+              <button onClick={doClaim} disabled={busy} className="mt-4 px-6 py-3 rounded-full bg-[#E0218A] text-white text-sm font-semibold disabled:opacity-60">
+                {busy ? 'Working...' : 'Submit claim'}
+              </button>
+            </div>
+          )}
+          {state === 3 && role !== 'Landlord' && (
+            <p className="mt-2 text-sm text-[#6B6B6B]">Checkout requested. Waiting for the landlord to submit a claim.</p>
           )}
           {state === 0 && role !== 'Tenant' && (
             <p className="mt-6 text-sm text-[#6B6B6B]">Waiting for the tenant to fund the deposit. Switch MetaMask to the Tenant account.</p>
