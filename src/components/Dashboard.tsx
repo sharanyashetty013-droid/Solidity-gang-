@@ -571,3 +571,12 @@ export const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
     </div>
   </PageShell>
 );
+
+export const DashboardPageLayout: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <PageShell role="Tenant">
+    {children}
+  </PageShell>
+);
+
