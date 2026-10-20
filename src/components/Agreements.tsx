@@ -1,4 +1,6 @@
 ﻿import { useMemo, useState } from 'react';
+import { useWallet } from '../hooks/useWallet';
+import { createAgreementTx } from '../lib/contract';
 import { PageShell } from './Dashboard';
 import {
   motion,
@@ -155,6 +157,29 @@ export function Agreements() {
   const notify = (message: string) => {
     setToast(message);
     window.setTimeout(() => setToast(''), 2800);
+  };
+
+  const { address: myAddress, isSepolia } = useWallet();
+  const [tenantAddr, setTenantAddr] = useState('');
+  const [depositEth, setDepositEth] = useState('0.001');
+  const [windowMin, setWindowMin] = useState('10');
+  const [sending, setSending] = useState(false);
+
+  const createOnChain = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!myAddress) { alert('Connect MetaMask first.'); return; }
+    if (!isSepolia) { alert('Switch MetaMask to Sepolia.'); return; }
+    if (!/^0x[a-fA-F0-9]{40}$/.test(tenantAddr.trim())) { alert('Enter a valid tenant wallet address (0x...).'); return; }
+    try {
+      setSending(true);
+      const r = await createAgreementTx(tenantAddr.trim(), depositEth, Number(windowMin) / 1440);
+      alert('Agreement #' + (r.id !== null ? r.id.toString() : '?') + ' created.\nhttps://sepolia.etherscan.io/tx/' + r.hash);
+      setShowCreate(false);
+    } catch (e: any) {
+      alert(e?.shortMessage || e?.message || 'Transaction failed');
+    } finally {
+      setSending(false);
+    }
   };
 
   const visibleAgreements = useMemo(() => {
@@ -1029,137 +1054,28 @@ export function Agreements() {
                 </button>
               </div>
 
-              <form onSubmit={createAgreement} className="p-6 sm:p-8">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <label className="text-xs font-semibold text-[#675A65] sm:col-span-2">
-                    Property name
-                    <input
-                      required
-                      className={`${inputClass} mt-2`}
-                      placeholder="e.g. Sunrise Residences"
-                      value={form.property}
-                      onChange={(event) =>
-                        setForm({ ...form, property: event.target.value })
-                      }
-                    />
-                  </label>
-
-                  <label className="text-xs font-semibold text-[#675A65] sm:col-span-2">
-                    Property location
-                    <input
-                      required
-                      className={`${inputClass} mt-2`}
-                      placeholder="City, state"
-                      value={form.location}
-                      onChange={(event) =>
-                        setForm({ ...form, location: event.target.value })
-                      }
-                    />
-                  </label>
-
+              <form onSubmit={createOnChain} className="p-6 sm:p-8">
+                <div className="grid grid-cols-1 gap-4">
                   <label className="text-xs font-semibold text-[#675A65]">
-                    Tenant name
-                    <input
-                      required
-                      className={`${inputClass} mt-2`}
-                      placeholder="Full name"
-                      value={form.tenant}
-                      onChange={(event) =>
-                        setForm({ ...form, tenant: event.target.value })
-                      }
-                    />
+                    Tenant wallet address
+                    <input required className={inputClass + ' mt-2'} placeholder="0x..." value={tenantAddr} onChange={(e) => setTenantAddr(e.target.value)} />
                   </label>
-
                   <label className="text-xs font-semibold text-[#675A65]">
-                    Landlord name
-                    <input
-                      required
-                      className={`${inputClass} mt-2`}
-                      placeholder="Full name"
-                      value={form.landlord}
-                      onChange={(event) =>
-                        setForm({ ...form, landlord: event.target.value })
-                      }
-                    />
+                    Deposit (ETH)
+                    <input required type="number" min="0.0001" step="0.0001" className={inputClass + ' mt-2'} value={depositEth} onChange={(e) => setDepositEth(e.target.value)} />
                   </label>
-
                   <label className="text-xs font-semibold text-[#675A65]">
-                    Monthly rent (G∩┐╜)
-                    <input
-                      required
-                      type="number"
-                      min="1"
-                      step="1"
-                      className={`${inputClass} mt-2`}
-                      placeholder="18000"
-                      value={form.rent}
-                      onChange={(event) =>
-                        setForm({ ...form, rent: event.target.value })
-                      }
-                    />
+                    Claim window (minutes, 1 to 129600)
+                    <input required type="number" min="1" max="129600" step="1" className={inputClass + ' mt-2'} value={windowMin} onChange={(e) => setWindowMin(e.target.value)} />
                   </label>
-
-                  <label className="text-xs font-semibold text-[#675A65]">
-                    Security deposit (G∩┐╜)
-                    <input
-                      required
-                      type="number"
-                      min="0"
-                      step="1"
-                      className={`${inputClass} mt-2`}
-                      placeholder="54000"
-                      value={form.deposit}
-                      onChange={(event) =>
-                        setForm({ ...form, deposit: event.target.value })
-                      }
-                    />
-                  </label>
-
-                  <label className="text-xs font-semibold text-[#675A65]">
-                    Start date
-                    <input
-                      required
-                      type="date"
-                      className={`${inputClass} mt-2`}
-                      value={form.startDate}
-                      onChange={(event) =>
-                        setForm({ ...form, startDate: event.target.value })
-                      }
-                    />
-                  </label>
-
-                  <label className="text-xs font-semibold text-[#675A65]">
-                    End date
-                    <input
-                      required
-                      type="date"
-                      className={`${inputClass} mt-2`}
-                      value={form.endDate}
-                      onChange={(event) =>
-                        setForm({ ...form, endDate: event.target.value })
-                      }
-                    />
-                  </label>
+                  <p className="text-xs text-[#8D808B]">The wallet connected in MetaMask becomes the landlord.</p>
                 </div>
-
                 <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowCreate(false);
-                      resetForm();
-                    }}
-                    className="min-h-12 rounded-full border border-[#E9E0E7] px-5 text-sm font-semibold text-[#6D606B] transition hover:bg-[#FCF7FA]"
-                  >
+                  <button type="button" onClick={() => setShowCreate(false)} className="min-h-12 rounded-full border border-[#E9E0E7] px-5 text-sm font-semibold text-[#6D606B] transition hover:bg-[#FCF7FA]">
                     Cancel
                   </button>
-
-                  <button
-                    type="submit"
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#E0218A] px-6 text-sm font-semibold text-white transition hover:bg-[#BD176F]"
-                  >
-                    <Check size={17} />
-                    Create agreement
+                  <button type="submit" disabled={sending} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#E0218A] px-6 text-sm font-semibold text-white transition hover:bg-[#BD176F] disabled:opacity-60">
+                    {sending ? 'Confirm in MetaMask...' : 'Create agreement'}
                   </button>
                 </div>
               </form>

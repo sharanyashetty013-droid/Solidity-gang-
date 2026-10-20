@@ -1,4 +1,4 @@
-import { BrowserProvider, Contract } from 'ethers';
+import { BrowserProvider, Contract, parseEther } from 'ethers';
 import raw from './abi.json';
 import { CONTRACT_ADDRESS } from './config';
 
@@ -29,4 +29,19 @@ export async function getRole(id: bigint | number, address: string) {
   if (a.tenant.toLowerCase() === me) return 'Tenant';
   if (arbiter.toLowerCase() === me) return 'Arbiter';
   return 'Viewer';
+}
+
+export async function createAgreementTx(tenant: string, depositEth: string, windowDays: number) {
+  const c = await writeContract();
+  const seconds = BigInt(Math.round(windowDays * 86400));
+  const tx = await c.createAgreement(tenant, parseEther(depositEth), seconds);
+  const receipt = await tx.wait();
+  let id: bigint | null = null;
+  for (const log of receipt.logs) {
+    try {
+      const p = c.interface.parseLog(log);
+      if (p && p.name === 'AgreementCreated') id = p.args[0];
+    } catch {}
+  }
+  return { hash: tx.hash as string, id };
 }
