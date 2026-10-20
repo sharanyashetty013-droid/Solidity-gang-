@@ -254,7 +254,7 @@ export default function AgreementView() {
           {state === 5 && role !== 'Arbiter' && (
             <p className="mt-4 text-sm text-[#6B6B6B]">Waiting for the arbiter. Switch MetaMask to the Arbiter account (address is in the Arbiter row).</p>
           )}
-          {(state === 4 || state === 5) && (
+          {(state === 4 || state === 5 || (state === 3 && deadline > 0 && Date.now() / 1000 > deadline)) && (
             <button onClick={doRelease} disabled={busy} className="mt-6 block px-6 py-3 rounded-full border border-[#E0218A] text-[#E0218A] text-sm font-semibold disabled:opacity-60">
               Release funds
             </button>
