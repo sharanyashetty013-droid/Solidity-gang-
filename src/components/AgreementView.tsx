@@ -11,6 +11,7 @@ export default function AgreementView() {
   const [arbiter, setArbiter] = useState('');
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
+  const [resAmt, setResAmt] = useState('');
   const [items, setItems] = useState<any[]>([]);
   const [claimName, setClaimName] = useState('');
   const [claimAmt, setClaimAmt] = useState('');
@@ -131,6 +132,41 @@ export default function AgreementView() {
     }
   };
 
+  const doResolve = async (i: number) => {
+    try {
+      if (resAmt === '') { setMsg('Enter an award amount (0 to the claimed amount)'); return; }
+      setBusy(true);
+      setMsg('Confirm in MetaMask...');
+      const c = await writeContract();
+      const tx = await c.resolveDispute(BigInt(id || '0'), BigInt(i), parseEther(resAmt));
+      setMsg('Waiting for confirmation...');
+      await tx.wait();
+      setMsg('Resolved item ' + i + '. Tx: https://sepolia.etherscan.io/tx/' + tx.hash);
+      await load();
+    } catch (e: any) {
+      setMsg('Failed: ' + (e?.shortMessage || e?.message));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doRelease = async () => {
+    try {
+      setBusy(true);
+      setMsg('Confirm in MetaMask...');
+      const c = await writeContract();
+      const tx = await c.release(BigInt(id || '0'));
+      setMsg('Waiting for confirmation...');
+      await tx.wait();
+      setMsg('Released. Tx: https://sepolia.etherscan.io/tx/' + tx.hash);
+      await load();
+    } catch (e: any) {
+      setMsg('Failed: ' + (e?.shortMessage || e?.message));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const row = 'flex justify-between gap-4 py-3 border-b border-black/5 text-sm';
 
   return (
@@ -145,6 +181,7 @@ export default function AgreementView() {
           <div className={row}><span>Claim window</span><b>{Number(a[3]) / 60} minutes</b></div>
           <div className={row}><span>Landlord</span><b className="break-all">{String(a[0])}</b></div>
           <div className={row}><span>Tenant</span><b className="break-all">{String(a[1])}</b></div>
+          <div className={row}><span>Arbiter</span><b className="break-all">{arbiter}</b></div>
 
           {state === 0 && role === 'Tenant' && (
             <button onClick={fund} disabled={busy} className="mt-6 px-6 py-3 rounded-full bg-[#E0218A] text-white text-sm font-semibold disabled:opacity-60">
@@ -204,6 +241,23 @@ export default function AgreementView() {
                 </div>
               ))}
             </div>
+          )}
+          {state === 5 && role === 'Arbiter' && items.map((it: any, i: number) => Number(it[3]) === 2 && (
+            <div key={'r' + i} className="mt-4">
+              <p className="text-sm mb-2">Resolve "{String(it[0])}" (claimed {formatEther(it[1])} ETH)</p>
+              <input value={resAmt} onChange={(e) => setResAmt(e.target.value)} placeholder="ETH awarded to landlord" className="block w-full border border-black/10 rounded-lg px-3 py-2 text-sm" />
+              <button onClick={() => doResolve(i)} disabled={busy} className="mt-3 px-6 py-3 rounded-full bg-[#E0218A] text-white text-sm font-semibold disabled:opacity-60">
+                {busy ? 'Working...' : 'Resolve dispute'}
+              </button>
+            </div>
+          ))}
+          {state === 5 && role !== 'Arbiter' && (
+            <p className="mt-4 text-sm text-[#6B6B6B]">Waiting for the arbiter. Switch MetaMask to the Arbiter account (address is in the Arbiter row).</p>
+          )}
+          {(state === 4 || state === 5) && (
+            <button onClick={doRelease} disabled={busy} className="mt-6 block px-6 py-3 rounded-full border border-[#E0218A] text-[#E0218A] text-sm font-semibold disabled:opacity-60">
+              Release funds
+            </button>
           )}
           {state === 0 && role !== 'Tenant' && (
             <p className="mt-6 text-sm text-[#6B6B6B]">Waiting for the tenant to fund the deposit. Switch MetaMask to the Tenant account.</p>
