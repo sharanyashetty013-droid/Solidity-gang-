@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { useWallet } from '../hooks/useWallet';
+import { ShortAddress, RoleText } from '../lib/WalletInfo';
 import {
   LayoutDashboard,
   FileText,
@@ -117,8 +119,8 @@ const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
           <div className="w-14 h-14 mx-auto rounded-full bg-[#E0218A]/10 flex items-center justify-center">
             <ShieldCheck className="w-7 h-7 text-[#E0218A]" />
           </div>
-          <p className="mt-2 text-sm font-semibold text-[#111111]">{sample.address}</p>
-          <p className="text-xs text-[#6B6B6B]">Role: {role}</p>
+          <p className="mt-2 text-sm font-semibold text-[#111111]"><ShortAddress /></p>
+          <p className="text-xs text-[#6B6B6B]">Role: <RoleText /></p>
           <button className="mt-3 w-full py-2 rounded-xl bg-[#111111] hover:bg-black text-xs font-semibold text-white transition-colors">
             View profile
           </button>
@@ -133,7 +135,7 @@ const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
 
 /* ---------- TOP BAR ---------- */
 const TopBar: React.FC = () => {
-  const isSepolia = sample.chainId === SEPOLIA_CHAIN_ID;
+  const { isSepolia } = useWallet();
 
   return (
     <div>
@@ -148,7 +150,7 @@ const TopBar: React.FC = () => {
             />
             <span>{isSepolia ? 'Sepolia' : 'Wrong network'}</span>
             <span className="text-[#6B6B6B]">|</span>
-            <span>{sample.address}</span>
+            <span><ShortAddress /></span>
           </div>
 
           <button className="relative w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center">
