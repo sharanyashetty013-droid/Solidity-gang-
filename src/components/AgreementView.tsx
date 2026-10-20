@@ -11,6 +11,7 @@ export default function AgreementView() {
   const [arbiter, setArbiter] = useState('');
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
+  const [items, setItems] = useState<any[]>([]);
   const [claimName, setClaimName] = useState('');
   const [claimAmt, setClaimAmt] = useState('');
   const [deadline, setDeadline] = useState(0);
@@ -22,6 +23,7 @@ export default function AgreementView() {
       setA(await c.getAgreement(BigInt(id || '0')));
       setArbiter(await c.arbiter());
       setDeadline(Number(await c.claimDeadline(BigInt(id || '0'))));
+      try { setItems([...(await c.getItems(BigInt(id || '0')))]); } catch { setItems([]); }
       setMsg('');
     } catch (e: any) {
       setMsg('Could not load agreement: ' + (e?.shortMessage || e?.message));
@@ -112,6 +114,23 @@ export default function AgreementView() {
     }
   };
 
+  const doRespond = async (i: number, accept: boolean) => {
+    try {
+      setBusy(true);
+      setMsg('Confirm in MetaMask...');
+      const c = await writeContract();
+      const tx = await c.respondToClaim(BigInt(id || '0'), BigInt(i), accept);
+      setMsg('Waiting for confirmation...');
+      await tx.wait();
+      setMsg((accept ? 'Accepted' : 'Disputed') + ' item ' + i + '. Tx: https://sepolia.etherscan.io/tx/' + tx.hash);
+      await load();
+    } catch (e: any) {
+      setMsg('Failed: ' + (e?.shortMessage || e?.message));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const row = 'flex justify-between gap-4 py-3 border-b border-black/5 text-sm';
 
   return (
@@ -166,6 +185,25 @@ export default function AgreementView() {
           )}
           {state === 3 && role !== 'Landlord' && (
             <p className="mt-2 text-sm text-[#6B6B6B]">Checkout requested. Waiting for the landlord to submit a claim.</p>
+          )}
+          {state >= 4 && items.length > 0 && (
+            <div className="mt-6">
+              <p className="text-sm font-semibold mb-2">Claim items</p>
+              {items.map((it: any, i: number) => (
+                <div key={i} className="py-3 border-b border-black/5 text-sm">
+                  <div className="flex justify-between gap-4">
+                    <span>{String(it[0])} - {formatEther(it[1])} ETH</span>
+                    <b>{['Pending', 'Accepted', 'Disputed', 'Resolved'][Number(it[3])]}{Number(it[3]) === 3 ? ' (awarded ' + formatEther(it[2]) + ' ETH)' : ''}</b>
+                  </div>
+                  {state === 4 && role === 'Tenant' && Number(it[3]) === 0 && (
+                    <div className="mt-2 flex gap-2">
+                      <button onClick={() => doRespond(i, true)} disabled={busy} className="px-4 py-2 rounded-full bg-[#E0218A] text-white text-xs font-semibold disabled:opacity-60">Accept</button>
+                      <button onClick={() => doRespond(i, false)} disabled={busy} className="px-4 py-2 rounded-full border border-[#E0218A] text-[#E0218A] text-xs font-semibold disabled:opacity-60">Dispute</button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
           {state === 0 && role !== 'Tenant' && (
             <p className="mt-6 text-sm text-[#6B6B6B]">Waiting for the tenant to fund the deposit. Switch MetaMask to the Tenant account.</p>
