@@ -11,6 +11,7 @@ export default function AgreementView() {
   const [arbiter, setArbiter] = useState('');
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -51,6 +52,27 @@ export default function AgreementView() {
     }
   };
 
+  const submitMoveIn = async () => {
+    try {
+      if (!file) { setMsg('Pick a photo first'); return; }
+      setBusy(true);
+      setMsg('Hashing photo...');
+      const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+      const hash = '0x' + Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+      setMsg('Confirm in MetaMask...');
+      const c = await writeContract();
+      const tx = await c.submitEvidence(BigInt(id || '0'), hash, 'local:' + file.name, 0);
+      setMsg('Waiting for confirmation...');
+      await tx.wait();
+      setMsg('Move-in evidence saved. Tx: https://sepolia.etherscan.io/tx/' + tx.hash);
+      await load();
+    } catch (e: any) {
+      setMsg('Failed: ' + (e?.shortMessage || e?.message));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const row = 'flex justify-between gap-4 py-3 border-b border-black/5 text-sm';
 
   return (
@@ -70,6 +92,15 @@ export default function AgreementView() {
             <button onClick={fund} disabled={busy} className="mt-6 px-6 py-3 rounded-full bg-[#E0218A] text-white text-sm font-semibold disabled:opacity-60">
               {busy ? 'Working...' : 'Fund deposit (' + formatEther(a[2]) + ' ETH)'}
             </button>
+          )}
+          {state === 1 && (role === 'Landlord' || role === 'Tenant') && (
+            <div className="mt-6">
+              <p className="text-sm text-[#6B6B6B] mb-2">Upload a move-in photo. Its hash goes on-chain and the tenancy becomes Active.</p>
+              <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} className="text-sm" />
+              <button onClick={submitMoveIn} disabled={busy || !file} className="mt-4 block px-6 py-3 rounded-full bg-[#E0218A] text-white text-sm font-semibold disabled:opacity-60">
+                {busy ? 'Working...' : 'Submit move-in evidence'}
+              </button>
+            </div>
           )}
           {state === 0 && role !== 'Tenant' && (
             <p className="mt-6 text-sm text-[#6B6B6B]">Waiting for the tenant to fund the deposit. Switch MetaMask to the Tenant account.</p>
