@@ -66,6 +66,7 @@ const menuItems = [
   { name: 'Evidence', path: '/evidence', icon: Camera },
   { name: 'Claims', path: '/claims', icon: ClipboardList },
   { name: 'Disputes', path: '/disputes', icon: Scale },
+  { name: 'On-chain', path: '/on-chain', icon: FileText },
 ];
 
 /* ---------- SIDEBAR ---------- */
