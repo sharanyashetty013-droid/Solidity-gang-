@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
@@ -8,23 +8,19 @@ import { HowItWorks } from './components/HowItWorks';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { PageLoader } from './components/PageLoader';
-import { Agreements } from './components/Agreements';
+import { useWallet } from './hooks/useWallet';
 
 export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const { error, connect } = useWallet();
   const [isLoaded, setIsLoaded] = useState(() => {
     if (typeof window !== 'undefined') {
       return sessionStorage.getItem('wdl_loaded') === 'true';
     }
     return false;
   });
-
-  // Agreements page route
-  if (window.location.hash === '#/agreements') {
-    return <Agreements />;
-  }
 
   const handlePageLoadComplete = () => {
     if (typeof window !== 'undefined') {
@@ -37,9 +33,21 @@ export default function App() {
     setIsLoaded(true);
   };
 
-  const handleLaunchApp = () => {
-  navigate('/dashboard');
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3200);
   };
+
+  const handleLaunchApp = async () => {
+    await connect();
+    navigate('/dashboard');
+  };
+
+  useEffect(() => {
+    if (error) showToast(error);
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-[#FAD0EA] p-2 sm:p-4 md:p-6 lg:p-8 font-body text-[#111111] antialiased selection:bg-[#E0218A] selection:text-white flex flex-col items-center relative">
@@ -59,20 +67,20 @@ export default function App() {
           {/* 2. Hero Section (3D) */}
           <Hero onLaunchApp={handleLaunchApp} />
 
-          {/* 3. About Section (Pinned 3D 360-degree rotation & unlocking keyhole) */}
+          {/* 3. About Section */}
           <About />
 
-          {/* 4. Key Features (3D Tilt & live automated scenes) */}
+          {/* 4. Key Features */}
           <Features />
 
-          {/* 5. How It Works Timeline (Autoplay & mini animations) */}
+          {/* 5. How It Works Timeline */}
           <HowItWorks />
 
           {/* 6. FAQ Accordion */}
           <Faq />
         </main>
 
-        {/* 7. Footer (Scrolling marquee) */}
+        {/* 7. Footer */}
         <Footer />
       </div>
 
