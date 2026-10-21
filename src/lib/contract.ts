@@ -1,4 +1,4 @@
-import { BrowserProvider, Contract, parseEther } from 'ethers';
+import { BrowserProvider, JsonRpcProvider, Contract, parseEther } from 'ethers';
 import raw from './abi.json';
 import { CONTRACT_ADDRESS } from './config';
 
@@ -11,8 +11,11 @@ export const STATES = [
 
 const eth = () => (window as any).ethereum;
 
+const RPC = (import.meta as any).env?.VITE_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com';
+const readProvider = new JsonRpcProvider(RPC, 11155111, { staticNetwork: true });
+
 export function readContract() {
-  return new Contract(CONTRACT_ADDRESS, abi, new BrowserProvider(eth()));
+  return new Contract(CONTRACT_ADDRESS, abi, readProvider);
 }
 
 export async function writeContract() {
