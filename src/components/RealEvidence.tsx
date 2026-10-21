@@ -1,7 +1,8 @@
+import { API_BASE } from '../lib/config';
 import { useState } from 'react';
 import { BrowserProvider } from 'ethers';
 
-const BACKEND = 'http://localhost:3001/api';
+const BACKEND = API_BASE;
 
 type Ev = {
   hash: string; cid: string; type: string; timestamp: number;

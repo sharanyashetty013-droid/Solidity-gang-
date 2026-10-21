@@ -1,3 +1,4 @@
+import { API_BASE } from '../lib/config';
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { formatEther, parseEther, BrowserProvider } from 'ethers';
@@ -59,7 +60,7 @@ export default function AgreementView() {
     }
   };
 
-  const BACKEND = 'http://localhost:3001/api';
+  const BACKEND = API_BASE;
 
   const submitEvidenceFlow = async (type: 'move-in' | 'move-out') => {
     try {
