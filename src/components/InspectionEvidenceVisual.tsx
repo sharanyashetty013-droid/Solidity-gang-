@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Camera, ShieldCheck, CheckCircle2, Sparkles } from 'lucide-react';
+import wall from '../assets/images/inspection_living_room_1791564745001.jpg';
 
 interface InspectionEvidenceVisualProps {
   className?: string;
@@ -34,7 +35,7 @@ export const InspectionEvidenceVisual: React.FC<InspectionEvidenceVisualProps> =
       {/* 3. Photo Card with Pill Overlays */}
       <div className="relative mt-3 rounded-2xl overflow-hidden border border-black/10 aspect-[16/10] bg-neutral-100 group">
         <img
-          src="/src/assets/images/inspection_living_room_1791564745001.jpg"
+          src={wall}
           alt="Living Room East Wall move-out inspection snapshot"
           referrerPolicy="no-referrer"
           className={`w-full h-full object-cover transition-transform duration-500 ${
