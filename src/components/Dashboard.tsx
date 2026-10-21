@@ -1,6 +1,14 @@
+import { useRole } from '../lib/useRole';
+import ProfileAvatar, { ProfileName } from './ProfileAvatar';
+import ProfileButtons from './ProfileButtons';
+import RoleLabel from '../lib/RoleLabel';
+import RealDashboard from './RealDashboard';
+import RealEvidence from './RealEvidence';
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { useWallet } from '../hooks/useWallet';
+import { ShortAddress, RoleText } from '../lib/WalletInfo';
 import {
   LayoutDashboard,
   FileText,
@@ -11,7 +19,6 @@ import {
   ShieldCheck,
   Search,
   Plus,
-  Bell,
   AlertTriangle,
   ArrowRight,
   Lock,
@@ -60,16 +67,16 @@ const actionNeeded = {
 
 const menuItems = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-  { name: 'Agreements', path: '/agreements', icon: FileText },
+  { name: 'My agreements', path: '/on-chain', icon: FileText },
   { name: 'Evidence', path: '/evidence', icon: Camera },
-  { name: 'Claims', path: '/claims', icon: ClipboardList },
-  { name: 'Disputes', path: '/disputes', icon: Scale },
+  { name: 'Create agreement', path: '/agreements', icon: FileText },
 ];
 
 /* ---------- SIDEBAR ---------- */
 const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { tenantOnly, isArbiter, loading } = useRole();
 
   // exact match, or a sub-page of it (e.g. /evidence/123)
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/');
@@ -87,7 +94,7 @@ const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
         </div>
 
         <nav className="flex flex-col gap-2">
-          {menuItems.map(({ name, path, icon: Icon }) => (
+          {menuItems.filter((x) => !((loading || tenantOnly || isArbiter) && x.path === '/agreements')).map(({ name, path, icon: Icon }) => (
             <button
               key={name}
               onClick={() => navigate(path)}
@@ -114,17 +121,10 @@ const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
         </button>
 
         <div className="bg-white/50 border border-white/70 rounded-2xl p-4 text-center">
-          <div className="w-14 h-14 mx-auto rounded-full bg-[#E0218A]/10 flex items-center justify-center">
-            <ShieldCheck className="w-7 h-7 text-[#E0218A]" />
-          </div>
-          <p className="mt-2 text-sm font-semibold text-[#111111]">{sample.address}</p>
-          <p className="text-xs text-[#6B6B6B]">Role: {role}</p>
-          <button className="mt-3 w-full py-2 rounded-xl bg-[#111111] hover:bg-black text-xs font-semibold text-white transition-colors">
-            View profile
-          </button>
-          <button className="mt-2 flex items-center justify-center gap-2 w-full text-xs text-[#6B6B6B]">
-            <LogOut className="w-4 h-4" /> Logout
-          </button>
+          <ProfileAvatar size={56} /><ProfileName />
+          <p className="mt-2 text-sm font-semibold text-[#111111]"><ShortAddress /></p>
+          <p className="text-xs text-[#6B6B6B]">Role: <RoleLabel /></p>
+          <ProfileButtons />
         </div>
       </div>
     </aside>
@@ -133,7 +133,7 @@ const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
 
 /* ---------- TOP BAR ---------- */
 const TopBar: React.FC = () => {
-  const isSepolia = sample.chainId === SEPOLIA_CHAIN_ID;
+  const { isSepolia } = useWallet();
 
   return (
     <div>
@@ -148,17 +148,12 @@ const TopBar: React.FC = () => {
             />
             <span>{isSepolia ? 'Sepolia' : 'Wrong network'}</span>
             <span className="text-[#6B6B6B]">|</span>
-            <span>{sample.address}</span>
+            <span><ShortAddress /></span>
           </div>
 
-          <button className="relative w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center">
-            <Bell className="w-5 h-5 text-[#111111]" />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#E0218A]" />
-          </button>
+          
 
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#111111] hover:bg-black text-white text-sm font-semibold shadow-md transition-colors">
-            <Plus className="w-4 h-4" /> Create agreement
-          </button>
+          
         </div>
       </div>
 
@@ -176,14 +171,7 @@ const TopBar: React.FC = () => {
       )}
 
       {/* Search */}
-      <div className="mt-5 flex items-center gap-3 bg-white rounded-2xl px-4 py-3 shadow-sm">
-        <Search className="w-5 h-5 text-[#6B6B6B]" />
-        <input
-          type="text"
-          placeholder="Search agreements, claims, evidence..."
-          className="flex-1 bg-transparent outline-none text-sm text-[#111111] placeholder:text-[#6B6B6B]"
-        />
-      </div>
+      
     </div>
   );
 };
@@ -437,7 +425,7 @@ const EvidenceStrip: React.FC = () => {
 };
 
 /* Full evidence card (Evidence page) */
-const EvidenceCard: React.FC = () => (
+const SampleEvidenceCard: React.FC = () => (
   <div className="bg-white rounded-3xl p-6 shadow-sm">
     <div className="flex flex-wrap items-center justify-between gap-2">
       <h2 className="text-lg font-bold text-[#111111]">Living room</h2>
@@ -478,6 +466,9 @@ const EvidenceCard: React.FC = () => (
     </div>
   </div>
 );
+
+const EvidenceCard: React.FC = () => <RealEvidence />;
+void SampleEvidenceCard;
 
 /* ---------- LOADING SKELETON ---------- */
 const StatCardsSkeleton: React.FC = () => (
@@ -524,32 +515,12 @@ export const PageShell: React.FC<{ role: Role; children: React.ReactNode }> = ({
 
 /* ---------- PAGES ---------- */
 export const Dashboard: React.FC = () => {
-  const [role, setRole] = useState<Role>('Tenant');
+  const [role] = useState<Role>('Tenant');
 
   return (
     <PageShell role={role}>
-      {/* Preview toggle (demo only) */}
-      <div className="self-start flex items-center gap-1 bg-white rounded-full p-1 shadow-sm text-xs font-semibold">
-        <span className="px-3 text-[#6B6B6B]">Preview as</span>
-        {(['Tenant', 'Landlord'] as Role[]).map((r) => (
-          <button
-            key={r}
-            onClick={() => setRole(r)}
-            className={`px-4 py-1.5 rounded-full transition-colors ${
-              role === r ? 'bg-[#111111] text-white shadow-md' : 'text-[#111111] hover:bg-black/5'
-            }`}
-          >
-            {r}
-          </button>
-        ))}
-      </div>
-
       <FadeIn><TopBar /></FadeIn>
-      <FadeIn delay={0.08}><ActionNeededCard role={role} /></FadeIn>
-      <FadeIn delay={0.16}>{PREVIEW_LOADING ? <StatCardsSkeleton /> : <StatCards />}</FadeIn>
-      <FadeIn delay={0.24}><DepositTimeline /></FadeIn>
-      <FadeIn delay={0.32}><EvidenceStrip /></FadeIn>
-      <FadeIn delay={0.4}><RecentActivity /></FadeIn>
+      <FadeIn delay={0.08}><RealDashboard /></FadeIn>
     </PageShell>
   );
 };
@@ -571,3 +542,12 @@ export const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
     </div>
   </PageShell>
 );
+
+export const DashboardPageLayout: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <PageShell role="Tenant">
+    {children}
+  </PageShell>
+);
+
