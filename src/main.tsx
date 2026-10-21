@@ -21,15 +21,8 @@ createRoot(document.getElementById('root')!).render(
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/agreements" element={<Agreements />} />
       <Route path="/evidence" element={<EvidencePage />} />
-      <Route
-        path="/claims"
-        element={
-          <DashboardPageLayout>
-            <Claims />
-          </DashboardPageLayout>
-        }
-      />
-      <Route path="/disputes" element={<DisputesPage />} />
+      <Route path="/claims" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/disputes" element={<Navigate to="/dashboard" replace />} />
       <Route path="/agreement/:id" element={<DashboardPageLayout><AgreementView /></DashboardPageLayout>} />
       <Route path="/on-chain" element={<DashboardPageLayout><OnChainAgreements /></DashboardPageLayout>} />
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { formatEther, parseEther } from 'ethers';
+import { formatEther, parseEther, BrowserProvider } from 'ethers';
 import { useWallet } from '../hooks/useWallet';
 import { readContract, writeContract, STATES } from '../lib/contract';
 
@@ -59,19 +59,40 @@ export default function AgreementView() {
     }
   };
 
-  const submitMoveIn = async () => {
+  const BACKEND = 'http://localhost:3001/api';
+
+  const submitEvidenceFlow = async (type: 'move-in' | 'move-out') => {
     try {
-      if (!file) { setMsg('Pick a photo first'); return; }
+      if (!file) { setMsg('Pick a JPEG photo first'); return; }
       setBusy(true);
-      setMsg('Hashing photo...');
-      const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
-      const hash = '0x' + Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
-      setMsg('Confirm in MetaMask...');
+      setMsg('Getting your location...');
+      const pos: GeolocationPosition = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 15000 }));
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      setMsg('Sign the upload request in MetaMask...');
+      const signer = await new BrowserProvider((window as any).ethereum).getSigner();
+      const signedAt = String(Math.floor(Date.now() / 1000));
+      const signature = await signer.signMessage('WallsDontLie capture\nagreement:' + id + '\ntype:' + type + '\nsignedAt:' + signedAt);
+      const fd = new FormData();
+      fd.append('photo', file);
+      fd.append('agreementId', String(id));
+      fd.append('type', type);
+      fd.append('lat', lat);
+      fd.append('lng', lng);
+      fd.append('signedAt', signedAt);
+      fd.append('signature', signature);
+      setMsg('Uploading to backend...');
+      const res = await fetch(BACKEND + '/capture', { method: 'POST', body: fd });
+      const out = await res.json();
+      if (!res.ok) throw new Error(out?.error?.message || 'Upload failed');
+      setMsg('Confirm the transaction in MetaMask...');
       const c = await writeContract();
-      const tx = await c.submitEvidence(BigInt(id || '0'), hash, 'local:' + file.name, 0);
+      const tx = await c.submitEvidence(BigInt(id || '0'), out.hash, out.cid, type === 'move-in' ? 0 : 1);
       setMsg('Waiting for confirmation...');
       await tx.wait();
-      setMsg('Move-in evidence saved. Tx: https://sepolia.etherscan.io/tx/' + tx.hash);
+      const geo = out.geoOk === null ? 'location not checked' : out.geoOk ? 'location OK' : 'location mismatch';
+      setMsg(type + ' evidence saved (' + geo + '). Tx: https://sepolia.etherscan.io/tx/' + tx.hash);
       await load();
     } catch (e: any) {
       setMsg('Failed: ' + (e?.shortMessage || e?.message));
@@ -79,6 +100,8 @@ export default function AgreementView() {
       setBusy(false);
     }
   };
+
+  const submitMoveIn = () => submitEvidenceFlow('move-in');
 
   const doCheckout = async () => {
     try {
@@ -191,7 +214,7 @@ export default function AgreementView() {
           {state === 1 && (role === 'Landlord' || role === 'Tenant') && (
             <div className="mt-6">
               <p className="text-sm text-[#6B6B6B] mb-2">Upload a move-in photo. Its hash goes on-chain and the tenancy becomes Active.</p>
-              <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} className="text-sm" />
+              <input type="file" accept="image/jpeg" onChange={(e) => setFile(e.target.files?.[0] || null)} className="text-sm" />
               <button onClick={submitMoveIn} disabled={busy || !file} className="mt-4 block px-6 py-3 rounded-full bg-[#E0218A] text-white text-sm font-semibold disabled:opacity-60">
                 {busy ? 'Working...' : 'Submit move-in evidence'}
               </button>
@@ -258,6 +281,15 @@ export default function AgreementView() {
             <button onClick={doRelease} disabled={busy} className="mt-6 block px-6 py-3 rounded-full border border-[#E0218A] text-[#E0218A] text-sm font-semibold disabled:opacity-60">
               Release funds
             </button>
+          )}
+          {(state === 2 || state === 3) && (role === 'Landlord' || role === 'Tenant') && (
+            <div className="mt-6">
+              <p className="text-sm text-[#6B6B6B] mb-2">Optional: upload a move-out photo (JPEG).</p>
+              <input type="file" accept="image/jpeg" onChange={(e) => setFile(e.target.files?.[0] || null)} className="text-sm" />
+              <button onClick={() => submitEvidenceFlow('move-out')} disabled={busy || !file} className="mt-4 block px-6 py-3 rounded-full border border-[#E0218A] text-[#E0218A] text-sm font-semibold disabled:opacity-60">
+                {busy ? 'Working...' : 'Submit move-out evidence'}
+              </button>
+            </div>
           )}
           {state === 0 && role !== 'Tenant' && (
             <p className="mt-6 text-sm text-[#6B6B6B]">Waiting for the tenant to fund the deposit. Switch MetaMask to the Tenant account.</p>

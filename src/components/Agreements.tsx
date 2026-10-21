@@ -1,3 +1,5 @@
+import { Navigate } from 'react-router-dom';
+import { useRole } from '../lib/useRole';
 ﻿import { useMemo, useState } from 'react';
 import { useWallet } from '../hooks/useWallet';
 import { createAgreementTx } from '../lib/contract';
@@ -46,68 +48,7 @@ interface Agreement {
   status: AgreementStatus;
 }
 
-const initialAgreements: Agreement[] = [
-  {
-    id: 1,
-    property: 'Sunrise Residences',
-    location: 'Nitte, Karnataka',
-    tenant: 'Aarav Sharma',
-    landlord: 'Priya Nair',
-    rent: 18000,
-    deposit: 54000,
-    startDate: '01 Oct 2026',
-    endDate: '30 Sep 2027',
-    status: 'Active',
-  },
-  {
-    id: 2,
-    property: 'The Palm House',
-    location: 'Mangalore, Karnataka',
-    tenant: 'Ananya Rao',
-    landlord: 'Rahul Menon',
-    rent: 22000,
-    deposit: 66000,
-    startDate: '15 Oct 2026',
-    endDate: '14 Oct 2027',
-    status: 'Pending',
-  },
-  {
-    id: 3,
-    property: 'Lakeview Apartments',
-    location: 'Udupi, Karnataka',
-    tenant: 'Ishaan Kapoor',
-    landlord: 'Meera Shah',
-    rent: 15000,
-    deposit: 45000,
-    startDate: '01 Jan 2026',
-    endDate: '31 Dec 2026',
-    status: 'Active',
-  },
-  {
-    id: 4,
-    property: 'Maple Garden Villa',
-    location: 'Manipal, Karnataka',
-    tenant: 'Diya Shetty',
-    landlord: 'Karan Patel',
-    rent: 30000,
-    deposit: 90000,
-    startDate: '01 Sep 2025',
-    endDate: '31 Aug 2026',
-    status: 'Completed',
-  },
-  {
-    id: 5,
-    property: 'Urban Nest Studio',
-    location: 'Mangalore, Karnataka',
-    tenant: 'Rohan Das',
-    landlord: 'Priya Nair',
-    rent: 12000,
-    deposit: 36000,
-    startDate: '01 Nov 2026',
-    endDate: '31 Oct 2027',
-    status: 'Pending',
-  },
-];
+const initialAgreements: Agreement[] = [];
 
 const money = (amount: number) =>
   new Intl.NumberFormat('en-IN', {
@@ -131,7 +72,7 @@ const statusDot: Record<AgreementStatus, string> = {
 const inputClass =
   'w-full rounded-xl border border-[#E9E4E8] bg-white px-3.5 py-3 text-sm text-[#262126] outline-none transition focus:border-[#E0218A] focus:ring-2 focus:ring-pink-100';
 
-export function Agreements() {
+export function AgreementsInner() {
   const reduceMotion = useReducedMotion();
 
   const [role, setRole] = useState<Role>('Tenant');
@@ -140,7 +81,7 @@ export function Agreements() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selected, setSelected] = useState<Agreement | null>(null);
-  const [showCreate, setShowCreate] = useState(false);
+  const [showCreate, setShowCreate] = useState(true);
   const [toast, setToast] = useState('');
 
   const [form, setForm] = useState({
@@ -343,18 +284,18 @@ export function Agreements() {
           <div>
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-pink-100 bg-white px-3 py-1.5 text-xs font-semibold text-[#C52B80]">
               <Sparkles size={13} />
-              Your rental workspace
+              New agreement
             </div>
 
             <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-              {role === 'Tenant' ? 'My agreements' : 'Property agreements'}
+              {role === 'Tenant' ? 'Create agreement' : 'Property agreements'}
               <span className="text-[#E0218A]">.</span>
             </h1>
 
             <p className="mt-2 max-w-xl text-sm leading-6 text-[#847985] sm:text-base">
               {role === 'Tenant'
-                ? 'Keep track of your rental contracts, security deposits, and important dates.'
-                : 'Manage your tenants, rental contracts, and security deposits from one place.'}
+                ? 'Set up a new deposit escrow on Sepolia.'
+                : 'Set up a new deposit escrow on Sepolia.'}
             </p>
           </div>
 
@@ -368,487 +309,10 @@ export function Agreements() {
           </button>
         </motion.section>
 
-        {/* Welcome / role panel */}
-        <motion.section
-          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...pageTransition, delay: 0.1 }}
-          className="relative mb-7 overflow-hidden rounded-[28px] bg-[#211720] p-6 text-white sm:p-8"
-        >
-          <div className="pointer-events-none absolute -right-12 -top-24 h-64 w-64 rounded-full border-[42px] border-white/[0.04]" />
-          <div className="pointer-events-none absolute -bottom-24 right-28 h-52 w-52 rounded-full bg-[#E0218A]/20 blur-3xl" />
-
-          <div className="relative z-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
-            <div className="max-w-2xl">
-              <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-pink-300">
-                <ShieldCheck size={15} />
-                Agreements overview
-              </div>
-
-              <h2 className="text-2xl font-bold leading-tight sm:text-3xl">
-                {role === 'Tenant'
-                  ? 'Your home. Your peace of mind.'
-                  : 'Your properties. One clear view.'}
-              </h2>
-
-              <p className="mt-3 max-w-lg text-sm leading-6 text-white/65">
-                {role === 'Tenant'
-                  ? 'Keep every rental detail organised, from the agreement start date to your deposit.'
-                  : 'Stay on top of rental commitments, agreement statuses, and the deposits associated with your properties.'}
-              </p>
-
-              <button
-                type="button"
-                onClick={() =>
-                  document
-                    .getElementById('agreement-list')
-                    ?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' })
-                }
-                className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-4 text-xs font-bold text-[#241A22] transition hover:bg-pink-100"
-              >
-                Explore agreements
-                <ArrowUpRight size={15} />
-              </button>
-            </div>
-
-            <div className="flex min-w-[175px] items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur-sm">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E0218A]">
-                {role === 'Tenant' ? (
-                  <Home size={23} />
-                ) : (
-                  <Building2 size={23} />
-                )}
-              </div>
-              <div>
-                <p className="text-xs text-white/55">Viewing as</p>
-                <p className="mt-1 text-base font-bold">{role}</p>
-                <p className="mt-1 text-[11px] text-pink-300">
-                  Demo workspace
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* Stats */}
-        <motion.section
-          initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...pageTransition, delay: 0.14 }}
-          className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
-        >
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-
-            return (
-              <motion.article
-                key={stat.label}
-                initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  ...pageTransition,
-                  delay: reduceMotion ? 0 : 0.18 + index * 0.06,
-                }}
-                whileHover={reduceMotion ? undefined : { y: -4 }}
-                className="rounded-[22px] border border-[#EFE7ED] bg-white p-5 shadow-[0_5px_22px_rgba(50,20,40,0.025)] transition-shadow hover:shadow-[0_12px_30px_rgba(80,30,65,0.07)] sm:p-6"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium text-[#827784]">
-                      {stat.label}
-                    </p>
-                    <p className="mt-3 break-words text-2xl font-extrabold tracking-tight sm:text-3xl">
-                      {stat.value}
-                    </p>
-                  </div>
-
-                  <div
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${stat.iconStyle}`}
-                  >
-                    <Icon size={21} />
-                  </div>
-                </div>
-
-                <div className="mt-5 flex items-center gap-2 border-t border-[#F2EDF1] pt-4">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-pink-50 text-[#D62B83]">
-                    <ArrowUpRight size={12} />
-                  </span>
-                  <span className="text-[11px] font-medium text-[#8A7F89]">
-                    {stat.trend}
-                  </span>
-                </div>
-              </motion.article>
-            );
-          })}
-        </motion.section>
-
-        {/* Featured agreement */}
-        <motion.section
-          initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...pageTransition, delay: 0.2 }}
-          className="mb-8 grid grid-cols-1 gap-5 lg:grid-cols-[1.15fr_0.85fr]"
-        >
-          <div className="relative overflow-hidden rounded-[26px] border border-[#F0E4EC] bg-white p-6 sm:p-7">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#D62B83]">
-                  Featured property
-                </p>
-                <h2 className="mt-2 text-xl font-bold">
-                  {role === 'Tenant'
-                    ? 'Your current rental'
-                    : 'Your rental portfolio'}
-                </h2>
-              </div>
-              <span className="rounded-full bg-pink-50 px-3 py-1.5 text-[11px] font-semibold text-[#C72B7E]">
-                {activeCount} active
-              </span>
-            </div>
-
-            <div className="mt-5 flex flex-col gap-5 sm:flex-row">
-              <div className="relative flex min-h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#F8D7EA] via-[#F0DDF1] to-[#DCCFF0] sm:w-44">
-                <div className="absolute left-5 top-5 h-20 w-20 rounded-full bg-white/40 blur-2xl" />
-                <div className="relative flex h-24 w-24 items-center justify-center rounded-[28px] border border-white/60 bg-white/50 text-[#B92B79] shadow-lg shadow-pink-200/40">
-                  <Building2 size={43} strokeWidth={1.4} />
-                </div>
-                <span className="absolute bottom-3 left-3 rounded-full bg-white/80 px-3 py-1 text-[10px] font-bold text-[#81556E] backdrop-blur">
-                  RENTAL PROPERTY
-                </span>
-              </div>
-
-              <div className="flex min-w-0 flex-1 flex-col justify-center">
-                <h3 className="text-lg font-bold">
-                  {role === 'Tenant'
-                    ? 'Sunrise Residences'
-                    : 'Rental portfolio'}
-                </h3>
-                <p className="mt-1 flex items-center gap-1.5 text-sm text-[#8B7F89]">
-                  <Building2 size={14} />
-                  {role === 'Tenant'
-                    ? 'Nitte, Karnataka'
-                    : 'Multiple properties'}
-                </p>
-
-                <div className="mt-5 grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-[#8B7F89]">
-                      {role === 'Tenant' ? 'Monthly rent' : 'Monthly rent total'}
-                    </p>
-                    <p className="mt-1 text-lg font-bold">
-                      {money(
-                        role === 'Tenant'
-                          ? 18000
-                          : agreements.reduce(
-                              (sum, item) => sum + item.rent,
-                              0,
-                            ),
-                      )}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-[#8B7F89]">
-                      {role === 'Tenant' ? 'Security deposit' : 'Deposits'}
-                    </p>
-                    <p className="mt-1 text-lg font-bold">
-                      {money(
-                        role === 'Tenant' ? 54000 : depositTotal,
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-[26px] border border-[#F0E4EC] bg-white p-6 sm:p-7">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#D62B83]">
-                  Agreement health
-                </p>
-                <h2 className="mt-2 text-xl font-bold">Status breakdown</h2>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-[#D62B83]">
-                <FileCheck2 size={20} />
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-5">
-              {[
-                {
-                  label: 'Active',
-                  value: activeCount,
-                  color: 'bg-emerald-400',
-                },
-                {
-                  label: 'Pending',
-                  value: pendingCount,
-                  color: 'bg-amber-400',
-                },
-                {
-                  label: 'Completed',
-                  value: completedCount,
-                  color: 'bg-slate-400',
-                },
-              ].map((item) => {
-                const percentage = agreements.length
-                  ? (item.value / agreements.length) * 100
-                  : 0;
-
-                return (
-                  <div key={item.label}>
-                    <div className="mb-2 flex items-center justify-between text-sm">
-                      <span className="font-medium text-[#635862]">
-                        {item.label}
-                      </span>
-                      <span className="font-bold">{item.value}</span>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-[#F3EDF2]">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${percentage}%` }}
-                        transition={{
-                          duration: reduceMotion ? 0 : 0.7,
-                          ease: 'easeOut',
-                        }}
-                        className={`h-full rounded-full ${item.color}`}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-6 flex items-start gap-3 rounded-xl bg-[#FBF5F9] p-3.5">
-              <Sparkles
-                size={17}
-                className="mt-0.5 shrink-0 text-[#D62B83]"
-              />
-              <p className="text-xs leading-5 text-[#7F707D]">
-                {pendingCount
-                  ? `${pendingCount} agreement${pendingCount === 1 ? '' : 's'} currently await${pendingCount === 1 ? 's' : ''} action. Review the list below to stay up to date.`
-                  : 'Everything is up to date. There are no pending agreements.'}
-              </p>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* Agreements table */}
-        <motion.section
-          id="agreement-list"
-          initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...pageTransition, delay: 0.24 }}
-          className="overflow-hidden rounded-[26px] border border-[#EFE5ED] bg-white shadow-[0_5px_22px_rgba(50,20,40,0.025)]"
-        >
-          <div className="flex flex-col gap-4 border-b border-[#F0E9EF] p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h2 className="text-xl font-bold">All agreements</h2>
-              <p className="mt-1 text-sm text-[#8A7F89]">
-                {role === 'Tenant'
-                  ? 'Review your rental contracts and important details.'
-                  : 'Keep track of your tenants and rental contracts.'}
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <label className="flex min-h-11 items-center gap-2 rounded-xl border border-[#EAE2E9] bg-white px-3.5 focus-within:border-[#E0218A] focus-within:ring-2 focus-within:ring-pink-100">
-                <Search size={17} className="shrink-0 text-[#9A8C98]" />
-                <input
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search agreements..."
-                  className="w-full min-w-0 bg-transparent text-sm outline-none sm:w-44"
-                  aria-label="Search agreements"
-                />
-                {search && (
-                  <button
-                    type="button"
-                    onClick={() => setSearch('')}
-                    aria-label="Clear search"
-                    className="text-[#9A8C98] hover:text-[#E0218A]"
-                  >
-                    <X size={15} />
-                  </button>
-                )}
-              </label>
-
-              <label className="flex min-h-11 items-center gap-2 rounded-xl border border-[#EAE2E9] bg-white px-3.5">
-                <Filter size={15} className="text-[#9A8C98]" />
-                <select
-                  value={statusFilter}
-                  onChange={(event) => setStatusFilter(event.target.value)}
-                  className="min-w-0 bg-transparent text-sm outline-none"
-                  aria-label="Filter by agreement status"
-                >
-                  <option value="All">All statuses</option>
-                  <option value="Active">Active</option>
-                  <option value="Pending">Pending</option>
-                  <option value="Completed">Completed</option>
-                </select>
-                <ChevronDown size={14} className="text-[#9A8C98]" />
-              </label>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[820px] text-left">
-              <thead className="bg-[#FCF9FB]">
-                <tr className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#968996]">
-                  <th className="px-6 py-4">Property</th>
-                  <th className="px-6 py-4">
-                    {role === 'Tenant' ? 'Landlord' : 'Tenant'}
-                  </th>
-                  <th className="px-6 py-4">Monthly rent</th>
-                  <th className="px-6 py-4">Deposit</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Details</th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-[#F2EDF1]">
-                <AnimatePresence mode="popLayout">
-                  {visibleAgreements.map((agreement) => {
-                    const person =
-                      role === 'Tenant'
-                        ? agreement.landlord
-                        : agreement.tenant;
-
-                    const initials = person
-                      .split(' ')
-                      .map((part) => part[0])
-                      .join('')
-                      .slice(0, 2)
-                      .toUpperCase();
-
-                    return (
-                      <motion.tr
-                        layout
-                        key={agreement.id}
-                        initial={
-                          reduceMotion
-                            ? false
-                            : { opacity: 0, y: 8 }
-                        }
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={
-                          reduceMotion
-                            ? undefined
-                            : { opacity: 0, y: -5 }
-                        }
-                        transition={{
-                          duration: reduceMotion ? 0 : 0.2,
-                        }}
-                        className="group transition-colors hover:bg-[#FFF9FC]"
-                      >
-                        <td className="px-6 py-5">
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#FBE3F0] to-[#F0E8F8] text-[#B72A78] transition group-hover:scale-105">
-                              <Building2 size={19} />
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold">
-                                {agreement.property}
-                              </p>
-                              <p className="mt-1 text-xs text-[#968996]">
-                                {agreement.location}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className="px-6 py-5">
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5E1EE] text-[10px] font-bold text-[#A32C70]">
-                              {initials}
-                            </div>
-                            <span className="text-sm font-medium">
-                              {person}
-                            </span>
-                          </div>
-                        </td>
-
-                        <td className="px-6 py-5 text-sm font-semibold">
-                          {money(agreement.rent)}
-                          <p className="mt-1 text-[10px] font-normal text-[#9A8E99]">
-                            per month
-                          </p>
-                        </td>
-
-                        <td className="px-6 py-5 text-sm font-semibold">
-                          {money(agreement.deposit)}
-                        </td>
-
-                        <td className="px-6 py-5">
-                          <span
-                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold ring-1 ring-inset ${statusStyles[agreement.status]}`}
-                          >
-                            <span
-                              className={`h-1.5 w-1.5 rounded-full ${statusDot[agreement.status]}`}
-                            />
-                            {agreement.status}
-                          </span>
-                        </td>
-
-                        <td className="px-6 py-5 text-right">
-                          <button
-                            type="button"
-                            onClick={() => setSelected(agreement)}
-                            className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-[#EDE3EA] px-3.5 text-xs font-semibold transition hover:border-pink-200 hover:bg-pink-50 hover:text-[#D62B83]"
-                          >
-                            View
-                            <ArrowUpRight size={14} />
-                          </button>
-                        </td>
-                      </motion.tr>
-                    );
-                  })}
-                </AnimatePresence>
-
-                {visibleAgreements.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-16 text-center">
-                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-50 text-[#D62B83]">
-                        <Search size={22} />
-                      </div>
-                      <p className="mt-4 font-semibold">
-                        No agreements found
-                      </p>
-                      <p className="mt-1 text-sm text-[#948994]">
-                        Try another search term or change the status filter.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSearch('');
-                          setStatusFilter('All');
-                        }}
-                        className="mt-4 text-sm font-semibold text-[#D62B83] hover:underline"
-                      >
-                        Clear filters
-                      </button>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[#F0E9EF] px-5 py-4 sm:px-6">
-            <p className="text-xs text-[#8C808B]">
-              Showing{' '}
-              <span className="font-semibold text-[#514650]">
-                {visibleAgreements.length}
-              </span>{' '}
-              of {agreements.length} agreements
-            </p>
-            <div className="flex items-center gap-2 text-xs text-[#8C808B]">
-              <ShieldCheck size={15} className="text-[#D62B83]" />
-              Sample data · Frontend demo
-            </div>
-          </footer>
-        </motion.section>
+        <div className="rounded-[28px] bg-white p-6 shadow-sm sm:p-8">
+          <p className="text-lg font-bold text-[#111111]">New deposit agreement</p>
+          <p className="mt-2 text-sm text-[#6B6B6B]">Enter the tenant address, deposit and claim window, then confirm in MetaMask. The connected wallet becomes the landlord. All your agreements are under My agreements.</p>
+        </div>
 
         {/* Footer */}
         <footer className="flex flex-col items-center justify-between gap-3 px-2 py-7 text-xs text-[#978A96] sm:flex-row">
@@ -1040,7 +504,7 @@ export function Agreements() {
                     Create agreement
                   </h2>
                   <p className="mt-2 text-sm text-[#8D808B]">
-                    Add the rental details to create a sample agreement.
+                    Add the rental details to create a real on-chain agreement.
                   </p>
                 </div>
 
@@ -1104,5 +568,12 @@ export function Agreements() {
     </PageShell>
   );
 }
+
+const Agreements = () => {
+  const { tenantOnly, isArbiter, loading } = useRole();
+  if (loading) return null;
+  if (tenantOnly || isArbiter) return <Navigate to="/dashboard" replace />;
+  return <AgreementsInner />;
+};
 
 export default Agreements;

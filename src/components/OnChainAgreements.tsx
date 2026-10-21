@@ -33,13 +33,13 @@ export default function OnChainAgreements() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-3xl font-bold text-[#111111]">On-chain agreements</h1>
+      <h1 className="text-3xl font-bold text-[#111111]">My agreements</h1>
       {msg && <p className="mt-4 text-sm text-[#6B6B6B]">{msg}</p>}
       <div className="mt-6 space-y-3">
         {list.map((x) => (
           <Link key={x.id} to={'/agreement/' + x.id} className="block bg-white rounded-2xl p-5 shadow-sm hover:shadow-md">
             <div className="flex justify-between text-sm">
-              <b>Agreement #{x.id}{mine(x) ? ' (yours)' : ''}</b>
+              <b>Agreement #{x.id}{mine(x) ? (String(x.a[1]).toLowerCase() === me ? ' · you are the tenant' : ' · you are the landlord') : ''}</b>
               <b>{STATES[Number(x.a[6])]}</b>
             </div>
             <p className="mt-2 text-xs text-[#6B6B6B]">
