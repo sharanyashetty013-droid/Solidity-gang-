@@ -18,6 +18,7 @@ export function createChain(config) {
       if (e?.revert?.name === 'AgreementNotFound' || (typeof e?.data === 'string' && e.data.startsWith(notFoundSelector))) {
         throw notFound('agreement_not_found', 'Agreement does not exist');
       }
+      console.error('RPC error:', e?.shortMessage || e?.message);
       throw new AppError(502, 'chain_unavailable', 'Could not read from the blockchain RPC');
     }
   }
