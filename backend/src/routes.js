@@ -178,7 +178,7 @@ export function buildRouter({ config, chain, ipfs, store }) {
     if (!allowed) throw forbidden('not_allowed', 'Only the tenant, landlord or arbiter can run the AI check');
 
     const events = await chain.getEvidence(id);
-    const withType = events.map((e) => ({ ...e, type: (store.getEvidence(id, e.cid) || {}).type }));
+    const withType = events.map((e) => ({ ...e, type: e.type || (store.getEvidence(id, e.cid) || {}).type })); // CHANGED: chain type first
     const moveIn = withType.find((e) => e.type === 'move-in');
     const moveOut = [...withType].reverse().find((e) => e.type === 'move-out');
     if (!moveIn || !moveOut) throw conflict('need_both_photos', 'Need one move-in and one move-out photo to compare');
