@@ -22,8 +22,6 @@
 
 <br/>
 
-<img src="docs/screenshots/01-hero.png" alt="Walls Don't Lie landing page" width="90%"/>
-
 </div>
 
 ---
