@@ -178,7 +178,7 @@ export function buildRouter({ config, chain, ipfs, store }) {
     if (!allowed) throw forbidden('not_allowed', 'Only the tenant, landlord or arbiter can run the AI check');
 
     const events = await chain.getEvidence(id);
-    const withType = events.map((e) => ({ ...e, type: e.type || (store.getEvidence(id, e.cid) || {}).type })); // CHANGED: chain type first
+    const withType = events.map((e) => ({ ...e, type: e.type || (store.getEvidence(id, e.cid) || {}).type }));
     const moveIn = withType.find((e) => e.type === 'move-in');
     const moveOut = [...withType].reverse().find((e) => e.type === 'move-out');
     if (!moveIn || !moveOut) throw conflict('need_both_photos', 'Need one move-in and one move-out photo to compare');
@@ -208,7 +208,7 @@ export function buildRouter({ config, chain, ipfs, store }) {
       generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
     });
     let resp;
-    for (const model of ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemini-2.0-flash']) {
+    for (const model of ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite']) {
       for (let attempt = 0; attempt < 2; attempt++) {
         resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
           method: 'POST',
