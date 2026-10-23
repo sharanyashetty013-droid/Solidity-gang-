@@ -207,8 +207,29 @@ export function buildRouter({ config, chain, ipfs, store }) {
       ] }],
       generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
     });
+
+    // Ask Google which models this key can use right now (no hardcoded names)
+    let models = [];
+    try {
+      const lr = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', {
+        headers: { 'x-goog-api-key': key },
+        signal: AbortSignal.timeout(15000),
+      });
+      const ld = await lr.json();
+      models = (ld.models || [])
+        .filter((m) => (m.supportedGenerationMethods || []).includes('generateContent')
+          && /flash/i.test(m.name)
+          && !/(image|tts|live|audio|embedding|thinking|exp|preview)/i.test(m.name))
+        .map((m) => m.name.replace('models/', ''));
+    } catch (e) { console.error('GEMINI_DEBUG list models failed', e?.message); }
+    const rank = (n) => (/lite/i.test(n) ? 2 : 0) + (/latest/i.test(n) ? 0 : 1);
+    models.sort((a, b) => rank(a) - rank(b) || b.localeCompare(a));
+    if (!models.length) models = ['gemini-flash-latest'];
+    models = models.slice(0, 5);
+    console.log('GEMINI_DEBUG models to try:', models.join(', '));
+
     let resp;
-    for (const model of ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite']) {
+    for (const model of models) {
       for (let attempt = 0; attempt < 2; attempt++) {
         resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
           method: 'POST',
@@ -216,12 +237,15 @@ export function buildRouter({ config, chain, ipfs, store }) {
           signal: AbortSignal.timeout(90000),
           body,
         });
-        if (resp.ok || ![404, 429, 500, 503].includes(resp.status)) break;
+        if (resp.ok || ![429, 500, 503].includes(resp.status)) break;
         await new Promise((r) => setTimeout(r, 2000));
       }
-      if (resp.ok || ![404, 429, 500, 503].includes(resp.status)) break;
+      if (resp.ok) break;
+      const t = await resp.text().catch(() => '');
+      console.error('GEMINI_DEBUG', model, resp.status, t.slice(0, 300));
     }
-    if (!resp.ok) { const t = await resp.text().catch(() => ''); console.error('GEMINI_DEBUG error', resp.status, t.slice(0, 600)); throw new AppError(502, 'ai_failed', 'Gemini error ' + resp.status + ': ' + t.slice(0, 200)); }
+    if (!resp.ok) throw new AppError(502, 'ai_failed', 'The AI service is busy right now. Please try again in a minute.');
+
     const data = await resp.json();
     const text = data?.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('') || '';
     let result;
