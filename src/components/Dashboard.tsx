@@ -4,7 +4,7 @@ import ProfileButtons from './ProfileButtons';
 import RoleLabel from '../lib/RoleLabel';
 import RealDashboard from './RealDashboard';
 import RealEvidence from './RealEvidence';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useWallet } from '../hooks/useWallet';
@@ -26,6 +26,8 @@ import {
   Check,
   ExternalLink,
   Home,
+  Menu,
+  X,
 } from 'lucide-react';
 
 /*
@@ -73,7 +75,7 @@ const menuItems = [
 ];
 
 /* ---------- SIDEBAR ---------- */
-const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
+const Sidebar: React.FC<{ role: Role; className?: string }> = ({ role, className = 'flex' }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { tenantOnly, isArbiter, loading } = useRole();
@@ -82,7 +84,7 @@ const Sidebar: React.FC<{ role: Role }> = ({ role }) => {
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/');
 
   return (
-    <aside className="w-64 shrink-0 bg-white rounded-3xl p-5 flex flex-col justify-between shadow-sm">
+    <aside className={`w-64 shrink-0 bg-white rounded-3xl p-5 flex-col justify-between shadow-sm ${className}`}>
       <div>
         <div className="flex items-center gap-2 px-2 mb-8">
           <img
@@ -498,20 +500,67 @@ export const FadeIn: React.FC<{ delay?: number; children: React.ReactNode }> = (
 );
 
 /* ---------- SHARED PAGE SHELL (background + glass frame + sidebar) ---------- */
-export const PageShell: React.FC<{ role: Role; children: React.ReactNode }> = ({ role, children }) => (
-  <div className="relative overflow-hidden min-h-screen bg-gradient-to-br from-[#F7F7F7] via-[#FBEAF3] to-[#FAD0EA] p-4 sm:p-8 flex justify-center">
-    {/* Soft pink glow behind the glass */}
-    <div className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-[#E0218A]/20 blur-3xl" />
-    <div className="pointer-events-none absolute top-1/3 -right-24 w-[380px] h-[380px] rounded-full bg-[#FAD0EA] blur-3xl" />
-    <div className="pointer-events-none absolute -bottom-24 left-1/3 w-[400px] h-[400px] rounded-full bg-[#E0218A]/15 blur-3xl" />
+export const PageShell: React.FC<{ role: Role; children: React.ReactNode }> = ({ role, children }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { pathname } = useLocation();
 
-    {/* Glass frame: every .bg-white card inside becomes see-through glass */}
-    <div className="relative z-10 w-full max-w-[1440px] bg-white/40 backdrop-blur-2xl border border-white/60 shadow-[0_8px_40px_rgba(224,33,138,0.12)] rounded-[36px] p-4 sm:p-6 flex gap-6 [&_.bg-white]:bg-white/60 [&_.bg-white]:backdrop-blur-xl [&_.bg-white]:border [&_.bg-white]:border-white/70">
-      <Sidebar role={role} />
-      <main className="flex-1 flex flex-col gap-5 min-w-0">{children}</main>
+  // close the mobile menu whenever the page changes
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  return (
+    <div className="relative overflow-hidden min-h-screen bg-gradient-to-br from-[#F7F7F7] via-[#FBEAF3] to-[#FAD0EA] p-2 sm:p-8 flex justify-center">
+      {/* Soft pink glow behind the glass */}
+      <div className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-[#E0218A]/20 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 -right-24 w-[380px] h-[380px] rounded-full bg-[#FAD0EA] blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 left-1/3 w-[400px] h-[400px] rounded-full bg-[#E0218A]/15 blur-3xl" />
+
+      {/* Mobile slide-out menu (phones only) */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMenuOpen(false)} />
+          <div className="absolute left-0 top-0 h-full overflow-y-auto p-3">
+            <button
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
+              className="absolute right-5 top-5 z-10 w-8 h-8 rounded-full bg-black/5 flex items-center justify-center text-[#111111]"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <Sidebar role={role} className="flex min-h-full" />
+          </div>
+        </div>
+      )}
+
+      {/* Glass frame: every .bg-white card inside becomes see-through glass */}
+      <div className="relative z-10 w-full max-w-[1440px] bg-white/40 backdrop-blur-2xl border border-white/60 shadow-[0_8px_40px_rgba(224,33,138,0.12)] rounded-[28px] sm:rounded-[36px] p-3 sm:p-6 flex flex-col md:flex-row gap-4 md:gap-6 [&_.bg-white]:bg-white/60 [&_.bg-white]:backdrop-blur-xl [&_.bg-white]:border [&_.bg-white]:border-white/70">
+        {/* Mobile top bar with menu button (phones only) */}
+        <div className="md:hidden flex items-center justify-between rounded-2xl bg-white px-3 py-2 shadow-sm">
+          <div className="flex items-center gap-2">
+            <img
+              src="/logo.jpeg"
+              alt="Walls Don't Lie logo"
+              className="w-8 h-8 rounded-lg object-cover mix-blend-multiply"
+            />
+            <span className="text-base font-bold text-[#111111]">Walls Don't Lie</span>
+          </div>
+          <button
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+            className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-[#111111]"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Desktop sidebar (hidden on phones) */}
+        <Sidebar role={role} className="hidden md:flex" />
+        <main className="flex-1 flex flex-col gap-5 min-w-0">{children}</main>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 /* ---------- PAGES ---------- */
 export const Dashboard: React.FC = () => {
@@ -550,4 +599,3 @@ export const DashboardPageLayout: React.FC<{ children: React.ReactNode }> = ({
     {children}
   </PageShell>
 );
-
