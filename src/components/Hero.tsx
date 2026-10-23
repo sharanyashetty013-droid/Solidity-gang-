@@ -95,10 +95,10 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="space-y-0.5 sm:space-y-1 mb-2.5 sm:mb-3"
             >
-              <p className="font-display font-medium text-lg sm:text-2xl md:text-3xl text-[#111111] tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(255,255,255,0.9)]">
+              <p className="font-display font-medium text-base sm:text-2xl md:text-3xl text-[#111111] tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(255,255,255,0.9)]">
                 Landlord keeping your deposit?
               </p>
-              <p className="font-display font-medium text-lg sm:text-2xl md:text-3xl text-[#111111] tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(255,255,255,0.9)]">
+              <p className="font-display font-medium text-base sm:text-2xl md:text-3xl text-[#111111] tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(255,255,255,0.9)]">
                 Tenant dodging repairs?
               </p>
             </motion.div>

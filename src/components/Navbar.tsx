@@ -17,9 +17,9 @@ export const Navbar: React.FC<NavbarProps> = () => {
   ];
 
   return (
-    <header className="sticky top-4 md:top-6 z-40 w-full px-4 sm:px-6 pointer-events-none">
+    <header className="sticky top-2 md:top-6 z-40 w-full px-4 sm:px-6 pointer-events-none">
       <div className="max-w-5xl mx-auto">
-        <nav className="pointer-events-auto bg-white/95 backdrop-blur-md px-5 sm:px-7 py-3 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/5 flex items-center justify-between transition-all">
+        <nav className="pointer-events-auto bg-white/95 backdrop-blur-md px-4 sm:px-7 py-2 sm:py-3 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/5 flex items-center justify-between transition-all">
           {/* Logo Left */}
           <a
             href="#"
