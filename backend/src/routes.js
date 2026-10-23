@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import multer from 'multer';
-import sharp from 'sharp'; // Downscales photos before sending to AI
 import { bad, conflict, forbidden, notFound, unauthorized, AppError } from './errors.js';
 import { sha256Hex, encrypt, decrypt } from './crypto.js';
 import { checkGeo } from './geo.js';
@@ -39,7 +38,7 @@ export function buildRouter({ config, chain, ipfs, store }) {
     res.json({ ok: blockNumber !== null, chainId: config.chainId, contract: config.contractAddress, blockNumber, ipfs: ipfs.mode });
   }));
 
-  // ───────── POST /api/property (landlord registers where the property is) ─────────
+  // ───────── POST /api/property ─────────
   r.post('/property', asyncH(async (req, res) => {
     const { agreementId, lat, lng, signedAt, signature } = req.body || {};
     const id = parseId(String(agreementId ?? ''));
@@ -59,7 +58,7 @@ export function buildRouter({ config, chain, ipfs, store }) {
 
   r.get('/property/:agreementId', asyncH(async (req, res) => {
     const id = parseId(req.params.agreementId);
-    await chain.getAgreement(id); // 404 if unknown
+    await chain.getAgreement(id);
     res.json({ agreementId: id, configured: !!store.getProperty(id) || !!config.defaultProperty });
   }));
 
@@ -86,13 +85,12 @@ export function buildRouter({ config, chain, ipfs, store }) {
       }
     }
 
-    // Mirror the contract's state rules so we don't pin photos the chain will reject.
     const okStates = type === 'move-in' ? ['Funded', 'Active'] : ['Active', 'CheckoutRequested'];
     if (!okStates.includes(agreement.state)) {
       throw conflict('wrong_state', `Cannot add ${type} evidence while the agreement is ${agreement.state}`);
     }
 
-    const timestamp = Math.floor(Date.now() / 1000); // server clock; block time becomes the final timestamp
+    const timestamp = Math.floor(Date.now() / 1000);
     const hash = sha256Hex(photo);
     const property = store.getProperty(id) || config.defaultProperty;
     const geo = checkGeo({ lat, lng }, property, config.geoRadiusMeters);
@@ -118,7 +116,7 @@ export function buildRouter({ config, chain, ipfs, store }) {
     res.json({ agreementId: id, state: agreement.state, evidence });
   }));
 
-  // ───────── GET /api/evidence/:agreementId/photo?cid=... ─────────
+  // ───────── GET /api/evidence/:agreementId/photo ─────────
   r.get('/evidence/:agreementId/photo', asyncH(async (req, res) => {
     const id = parseId(req.params.agreementId);
     const cid = String(req.query.cid || '');
@@ -159,7 +157,7 @@ export function buildRouter({ config, chain, ipfs, store }) {
     res.send(photo);
   }));
 
-  // ───────── POST /api/compare (AI before/after check, Gemini) ─────────
+  // ───────── POST /api/compare ─────────
   r.post('/compare', asyncH(async (req, res) => {
     const key = process.env.GEMINI_API_KEY;
     if (!key) throw new AppError(503, 'ai_not_configured', 'GEMINI_API_KEY is missing in backend/.env');
@@ -181,22 +179,12 @@ export function buildRouter({ config, chain, ipfs, store }) {
     const moveOut = [...withType].reverse().find((e) => e.type === 'move-out');
     if (!moveIn || !moveOut) throw conflict('need_both_photos', 'Need one move-in and one move-out photo to compare');
 
-    // Helper: decrypt and compress photo using Sharp to speed up AI inference
-    const loadAndCompress = async (ev) => {
+    const load = async (ev) => {
       const photo = decrypt(await ipfs.get(ev.cid), config.encryptionKey, id);
       if (sha256Hex(photo) !== ev.hash.toLowerCase()) throw new AppError(502, 'hash_mismatch', 'Photo does not match the on-chain hash');
-      
-      // Resize to max 800px width/height and compress JPEG to avoid massive payloads
-      const compressedBuffer = await sharp(photo)
-        .resize({ width: 800, height: 800, fit: 'inside', withoutEnlargement: true })
-        .jpeg({ quality: 75 })
-        .toBuffer();
-
-      return compressedBuffer.toString('base64');
+      return photo.toString('base64');
     };
-
-    const [inB64, outB64] = [await loadAndCompress(moveIn), await loadAndCompress(moveOut)];
-    console.log('GEMINI_DEBUG compressed photo sizes KB:', Math.round(inB64.length / 1024), Math.round(outB64.length / 1024));
+    const [inB64, outB64] = [await load(moveIn), await load(moveOut)];
 
     const prompt = [
       'You compare two photos of the same rental room. Image 1 is MOVE-IN. Image 2 is MOVE-OUT.',
@@ -223,7 +211,7 @@ export function buildRouter({ config, chain, ipfs, store }) {
         resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-          signal: AbortSignal.timeout(25000), // 25s timeout limit
+          signal: AbortSignal.timeout(60000), // 60s timeout for Render
           body,
         });
         if (resp.ok) break;
