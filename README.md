@@ -28,7 +28,7 @@
 
 ---
 
-## ✨ What is this?
+##  What is this?
 
 **Walls Don't Lie** is a decentralized **rental deposit escrow protocol**.
 
@@ -46,16 +46,16 @@ A real-world example from the app:
 
 | | |
 |---|---|
-| 🏢 **Location** | Living Room, East Wall |
-| 💰 **Total deposit** | `$2,400.00` |
-| ⚠️ **Landlord's claim** | `$1,200` for full wall repainting, citing scuff marks |
-| 🤖 **AI diff finding** | Move-in baseline already showed pre-existing microscopic paint fading. Classified as **normal wear**. |
-| ✅ **Outcome** | Claim dismissed. **$2,400 returned to the tenant in full, automatically.** |
-| 📞 **Phone calls / court fees** | `0` / `0` |
+| **Location** | Living Room, East Wall |
+| **Total deposit** | `$2,400.00` |
+| **Landlord's claim** | `$1,200` for full wall repainting, citing scuff marks |
+| **AI diff finding** | Move-in baseline already showed pre-existing microscopic paint fading. Classified as **normal wear**. |
+| **Outcome** | Claim dismissed. **$2,400 returned to the tenant in full, automatically.** |
+| **Phone calls / court fees** | `0` / `0` |
 
 ---
 
-## 🔥 Core Capabilities
+##  Core Capabilities
 
 | | Feature | What it does |
 |---|---|---|
