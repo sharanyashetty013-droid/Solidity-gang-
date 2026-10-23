@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
+import sharp from 'sharp'; // Downscales photos before sending to AI
 import { bad, conflict, forbidden, notFound, unauthorized, AppError } from './errors.js';
 import { sha256Hex, encrypt, decrypt } from './crypto.js';
 import { checkGeo } from './geo.js';
@@ -118,7 +119,6 @@ export function buildRouter({ config, chain, ipfs, store }) {
   }));
 
   // ───────── GET /api/evidence/:agreementId/photo?cid=... ─────────
-  // Auth: headers X-Signature + X-Expires (query ?signature=&expires= also accepted).
   r.get('/evidence/:agreementId/photo', asyncH(async (req, res) => {
     const id = parseId(req.params.agreementId);
     const cid = String(req.query.cid || '');
@@ -135,7 +135,6 @@ export function buildRouter({ config, chain, ipfs, store }) {
     if (!allowed && agreement.state === 'Disputed') allowed = sameAddr(signer, await chain.getArbiter());
     if (!allowed) throw forbidden('not_allowed', 'Only the tenant, the landlord, or (during a dispute) the arbiter can view evidence');
 
-    // The CID must really be evidence of THIS agreement, as recorded on-chain.
     const ev = (await chain.getEvidence(id)).find((e) => e.cid === cid);
     if (!ev) throw notFound('evidence_not_found', 'No on-chain evidence with that CID for this agreement');
 
@@ -161,7 +160,6 @@ export function buildRouter({ config, chain, ipfs, store }) {
   }));
 
   // ───────── POST /api/compare (AI before/after check, Gemini) ─────────
-  // Headers: X-Signature + X-Expires, signed like a photo view with cid = "ai-compare".
   r.post('/compare', asyncH(async (req, res) => {
     const key = process.env.GEMINI_API_KEY;
     if (!key) throw new AppError(503, 'ai_not_configured', 'GEMINI_API_KEY is missing in backend/.env');
@@ -183,13 +181,22 @@ export function buildRouter({ config, chain, ipfs, store }) {
     const moveOut = [...withType].reverse().find((e) => e.type === 'move-out');
     if (!moveIn || !moveOut) throw conflict('need_both_photos', 'Need one move-in and one move-out photo to compare');
 
-    const load = async (ev) => {
+    // Helper: decrypt and compress photo using Sharp to speed up AI inference
+    const loadAndCompress = async (ev) => {
       const photo = decrypt(await ipfs.get(ev.cid), config.encryptionKey, id);
       if (sha256Hex(photo) !== ev.hash.toLowerCase()) throw new AppError(502, 'hash_mismatch', 'Photo does not match the on-chain hash');
-      return photo.toString('base64');
+      
+      // Resize to max 800px width/height and compress JPEG to avoid massive payloads
+      const compressedBuffer = await sharp(photo)
+        .resize({ width: 800, height: 800, fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 75 })
+        .toBuffer();
+
+      return compressedBuffer.toString('base64');
     };
-    const [inB64, outB64] = [await load(moveIn), await load(moveOut)];
-    console.log('GEMINI_DEBUG photo sizes KB (base64):', Math.round(inB64.length / 1024), Math.round(outB64.length / 1024));
+
+    const [inB64, outB64] = [await loadAndCompress(moveIn), await loadAndCompress(moveOut)];
+    console.log('GEMINI_DEBUG compressed photo sizes KB:', Math.round(inB64.length / 1024), Math.round(outB64.length / 1024));
 
     const prompt = [
       'You compare two photos of the same rental room. Image 1 is MOVE-IN. Image 2 is MOVE-OUT.',
@@ -208,49 +215,33 @@ export function buildRouter({ config, chain, ipfs, store }) {
       generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
     });
 
-    // Ask Google which models this key can use right now (no hardcoded names)
-    let models = [];
-    try {
-      const lr = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', {
-        headers: { 'x-goog-api-key': key },
-        signal: AbortSignal.timeout(15000),
-      });
-      const ld = await lr.json();
-      models = (ld.models || [])
-        .filter((m) => (m.supportedGenerationMethods || []).includes('generateContent')
-          && /flash/i.test(m.name)
-          && !/(image|tts|live|audio|embedding|thinking|exp|preview)/i.test(m.name))
-        .map((m) => m.name.replace('models/', ''));
-    } catch (e) { console.error('GEMINI_DEBUG list models failed', e?.message); }
-    const rank = (n) => (/lite/i.test(n) ? 2 : 0) + (/latest/i.test(n) ? 0 : 1);
-    models.sort((a, b) => rank(a) - rank(b) || b.localeCompare(a));
-    if (!models.length) models = ['gemini-flash-latest'];
-    models = models.slice(0, 5);
-    console.log('GEMINI_DEBUG models to try:', models.join(', '));
+    const models = ['gemini-1.5-flash', 'gemini-1.5-flash-latest'];
 
     let resp;
     for (const model of models) {
-      for (let attempt = 0; attempt < 2; attempt++) {
-        resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
+      try {
+        resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-          signal: AbortSignal.timeout(90000),
+          signal: AbortSignal.timeout(25000), // 25s timeout limit
           body,
         });
-        if (resp.ok || ![429, 500, 503].includes(resp.status)) break;
-        await new Promise((r) => setTimeout(r, 2000));
+        if (resp.ok) break;
+      } catch (e) {
+        console.error(`GEMINI_DEBUG call to ${model} failed:`, e?.message);
       }
-      if (resp.ok) break;
-      const t = await resp.text().catch(() => '');
-      console.error('GEMINI_DEBUG', model, resp.status, t.slice(0, 300));
     }
-    if (!resp.ok) throw new AppError(502, 'ai_failed', 'The AI service is busy right now. Please try again in a minute.');
+
+    if (!resp || !resp.ok) throw new AppError(502, 'ai_failed', 'The AI service is busy right now. Please try again in a minute.');
 
     const data = await resp.json();
     const text = data?.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('') || '';
     let result;
-    try { result = JSON.parse(text.replace(/```json|```/g, '').trim()); }
-    catch { throw new AppError(502, 'ai_bad_output', 'AI returned an unreadable answer, try again'); }
+    try { 
+      result = JSON.parse(text.replace(/```json|```/g, '').trim()); 
+    } catch { 
+      throw new AppError(502, 'ai_bad_output', 'AI returned an unreadable answer, try again'); 
+    }
 
     res.json({ agreementId: id, moveInCid: moveIn.cid, moveOutCid: moveOut.cid, result });
   }));
