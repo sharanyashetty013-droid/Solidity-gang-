@@ -205,15 +205,6 @@ Solidity-gang-/
 - Only the tenant can request checkout. Production would let the landlord do it after the lease end date.
 - ETH only, on testnet.
 
-##  Roadmap
-
-- [x] Escrow contract with itemized claims and arbiter
-- [x] Evidence timeline and AI diff UI
-- [ ] Arbiter timeout and multisig arbiter panel
-- [ ] ERC-20 / stablecoin deposits
-- [ ] Landlord-triggered checkout
-- [ ] Mobile-first capture flow
-- [ ] Contract audit
 
 ---
 
