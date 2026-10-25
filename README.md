@@ -23,13 +23,13 @@
 
 ---
 
-## 💔 The problem
+##  The problem
 
 *"It was already like that."* Almost every tenant has said it. Almost none can prove it.
 
 Deposits get held for weeks, photos get lost, and going to court costs more than the deposit itself. So the landlord's word wins, not because it's true, but because it's the only one on record.
 
-## 💡 What is this?
+##  What is this?
 
 **Walls Don't Lie** is a decentralized rental deposit escrow. The deposit is locked in a smart contract, photo hashes are recorded on-chain, and AI shows what changed between move-in and move-out. Money moves only by the contract's rules.
 
@@ -39,7 +39,7 @@ Deposits get held for weeks, photos get lost, and going to court costs more than
 
 ---
 
-## 🧭 How it works
+##  How it works
 
 ```mermaid
 flowchart LR
@@ -69,7 +69,7 @@ If the tenant ignores a claim, the items go to the arbiter. The landlord is neve
 
 ---
 
-## 👥 Roles
+##  Roles
 
 | Role | What they can do |
 |---|---|
@@ -80,21 +80,19 @@ If the tenant ignores a claim, the items go to the arbiter. The landlord is neve
 
 ---
 
-## 🎯 Example (sample data shown in the app)
+##  Live demo on Sepolia
 
-| | |
-|---|---|
-| **Location** | Living Room, East Wall |
-| **Deposit** | `$2,400.00` |
-| **Landlord's claim** | `$1,200` for repainting, citing scuff marks |
-| **AI diff** | Move-in photos already showed paint fading, so the AI flags it as **normal wear** |
-| **Tenant** | Disputes the item |
-| **Arbiter** | Reviews the evidence and awards `$0` |
-| **Outcome** | Full `$2,400` returns to the tenant. 0 phone calls, 0 court fees |
+This is not a mockup. The app runs against the deployed contract on the **Sepolia testnet** with free test ETH. Real agreements have been created, funded, disputed and settled on-chain, and you can check them yourself:
+
+- **Contract:** [`0x49f1D85E5f4136581727Eecf5c904AA2CF0332Da`](https://sepolia.etherscan.io/address/0x49f1D85E5f4136581727Eecf5c904AA2CF0332Da)
+- **A dispute ruled by the arbiter:** [Resolve Dispute transaction](https://sepolia.etherscan.io/tx/0x3ba8f4cae81065acdd8e5bc8e035150f3533ea68c45ea4446d31b47f47857025)
+- **A settled agreement (deposit split between tenant and landlord):** [Release transaction](https://sepolia.etherscan.io/tx/0x0f8bc9d144ea8bbc164fdda49f31ddf6ac321549679c41f3bcb01314b66aa558)
+
+Try it: connect MetaMask on Sepolia, open the [live app](https://walls-dont-lie.vercel.app), and create your own agreement.
 
 ---
 
-## ✨ Core features
+##  Core features
 
 | | Feature | What it does |
 |---|---|---|
@@ -149,8 +147,6 @@ If the tenant ignores a claim, the items go to the arbiter. The landlord is neve
 - Source: [`contracts/src/RentalEscrow.sol`](contracts/src/RentalEscrow.sol)
 - Tests: [`contracts/test/RentalEscrow.t.sol`](contracts/test/RentalEscrow.t.sol)
 - ABI: [`docs/RentalEscrow.abi.json`](docs/RentalEscrow.abi.json)
-- **Sepolia address:** `YOUR_CONTRACT_ADDRESS`
-- Etherscan: https://sepolia.etherscan.io/address/YOUR_CONTRACT_ADDRESS
 
 Run the tests:
 
@@ -159,9 +155,20 @@ cd contracts
 forge test
 ```
 
+### Deployed on Sepolia (testnet)
+
+| What | Address |
+|---|---|
+| **RentalEscrow contract** | [`0x49f1D85E5f4136581727Eecf5c904AA2CF0332Da`](https://sepolia.etherscan.io/address/0x49f1D85E5f4136581727Eecf5c904AA2CF0332Da) |
+| **Demo landlord (owner) wallet** | [`0x8Abe3CbdD2B0Fe774D0d3a889Ee5E94935CdBE3e`](https://sepolia.etherscan.io/address/0x8Abe3CbdD2B0Fe774D0d3a889Ee5E94935CdBE3e) |
+| **Demo tenant wallet** | [`0x6a90C5206D65035b75Ed5B65E1682c6c08afb830`](https://sepolia.etherscan.io/address/0x6a90C5206D65035b75Ed5B65E1682c6c08afb830) |
+| **Demo arbiter wallet** | [`0x206b4732a0c78E695ac137852A3ad78777Bf5284`](https://sepolia.etherscan.io/address/0x206b4732a0c78E695ac137852A3ad78777Bf5284) |
+
+These are test wallets with free Sepolia ETH. No real money is involved.
+
 ---
 
-## 🚀 Run the app locally
+##  Run the app locally
 
 ```bash
 git clone https://github.com/sharanyashetty013-droid/Solidity-gang-.git
@@ -191,14 +198,14 @@ Solidity-gang-/
 
 ---
 
-## ⚠️ Known limits (hackathon scope)
+##  Known limits (hackathon scope)
 
 - The arbiter is set by the contract deployer. Production would use a multisig or a panel.
 - There is no arbiter timeout yet.
 - Only the tenant can request checkout. Production would let the landlord do it after the lease end date.
 - ETH only, on testnet.
 
-## 🗺️ Roadmap
+##  Roadmap
 
 - [x] Escrow contract with itemized claims and arbiter
 - [x] Evidence timeline and AI diff UI
@@ -212,7 +219,7 @@ Solidity-gang-/
 
 <div align="center">
 
-### Built by the **Solidity Gang** 💗
+### Built by Team **Solidity gang** 💗
 *Because walls don't lie.*
 
 </div>
