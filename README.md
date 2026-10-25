@@ -4,7 +4,6 @@
 
 ### Proof on every wall. Deposit back in your hands.
 
-*Landlord keeping your deposit? Tenant dodging repairs?*
 *Deposits held in a smart contract. Settled by photo proof, not phone calls.*
 
 <br/>
@@ -20,51 +19,93 @@
 ![Three.js](https://img.shields.io/badge/Three.js-000000?style=flat-square&logo=threedotjs&logoColor=white)
 ![Gemini](https://img.shields.io/badge/Google_Gemini-AI-4285F4?style=flat-square&logo=googlegemini&logoColor=white)
 
-<br/>
-
 </div>
 
 ---
 
-##  What is this?
+## 💔 The problem
 
-**Walls Don't Lie** is a decentralized **rental deposit escrow protocol**.
+*"It was already like that."* Almost every tenant has said it. Almost none can prove it.
 
-Security deposits are one of the most disputed parts of renting. Claims get made, photos get lost, and the tenant ends up chasing the landlord over phone calls. Walls Don't Lie replaces all of that with **cryptographic proof**:
+Deposits get held for weeks, photos get lost, and going to court costs more than the deposit itself. So the landlord's word wins, not because it's true, but because it's the only one on record.
 
-> 📸 Photos are taken at move-in → 🔐 their hashes are anchored on-chain → 🤖 AI compares them with move-out photos → 💸 the contract settles the deposit automatically.
+## 💡 What is this?
 
-No he-said-she-said. No court fees. Just evidence.
+**Walls Don't Lie** is a decentralized rental deposit escrow. The deposit is locked in a smart contract, photo hashes are recorded on-chain, and AI shows what changed between move-in and move-out. Money moves only by the contract's rules.
+
+> **AI advises. The contract enforces. The arbiter settles disputes.**
+
+> 🧪 Runs on the **Sepolia testnet** with free test ETH. No real money is involved.
 
 ---
 
-## 🎯 See it in action
+## 🧭 How it works
 
-A real-world example from the app:
+```mermaid
+flowchart LR
+    A["🏠 Landlord creates agreement"] --> B["💰 Tenant locks deposit"]
+    B --> C["📸 Move-in photos<br/>hash + IPFS link on-chain"]
+    C --> D["🚪 Tenant requests checkout<br/>claim window starts"]
+    D -->|No claim in time| F["✅ Full refund to tenant"]
+    D --> E["📸 Move-out photos<br/>+ AI compare"]
+    E --> G["🧾 Landlord submits<br/>itemized claim"]
+    G --> H{"Tenant responds<br/>per item"}
+    H -->|Accept| I["Landlord paid<br/>for that item"]
+    H -->|Dispute| J["⚖️ Arbiter rules<br/>on that item"]
+    I --> K["💸 Release: rest goes<br/>back to tenant"]
+    J --> K
+```
+
+1. **Landlord creates the agreement:** tenant wallet, deposit and claim window.
+2. **Tenant locks the exact deposit** in the contract.
+3. **Move-in photos:** each photo's hash and IPFS link are recorded on-chain with a block timestamp, so they can't be edited later.
+4. **Tenant requests checkout,** which starts the claim window. Move-out photos can be added by the tenant or the landlord.
+5. **AI compares** move-in and move-out photos and shows the differences. It never moves money.
+6. **Landlord submits an itemized claim** (for example "wall scratch") inside the window. The total can't exceed the deposit.
+7. **Tenant accepts or disputes each item.** Disputed items go to the arbiter, who sets the amount, never more than claimed.
+8. **Release:** if no claim is made in time, the full deposit goes back to the tenant. Anyone can trigger the payout, so the landlord can't block it. Otherwise the agreed amounts go to the landlord and the rest to the tenant.
+
+If the tenant ignores a claim, the items go to the arbiter. The landlord is never auto-paid.
+
+---
+
+## 👥 Roles
+
+| Role | What they can do |
+|---|---|
+| **Landlord** | Creates the agreement, adds evidence, submits an itemized claim inside the claim window |
+| **Tenant** | Locks the deposit, adds evidence, requests checkout, accepts or disputes each claimed item |
+| **Arbiter** | Appears only in a dispute. Views all evidence and rules on disputed items. Cannot create agreements or hold funds, and can't be a party in the same agreement |
+| **Anyone** | Can trigger the payout once the rules allow it |
+
+---
+
+## 🎯 Example (sample data shown in the app)
 
 | | |
 |---|---|
 | **Location** | Living Room, East Wall |
-| **Total deposit** | `$2,400.00` |
-| **Landlord's claim** | `$1,200` for full wall repainting, citing scuff marks |
-| **AI diff finding** | Move-in baseline already showed pre-existing microscopic paint fading. Classified as **normal wear**. |
-| **Outcome** | Claim dismissed. **$2,400 returned to the tenant in full, automatically.** |
-| **Phone calls / court fees** | `0` / `0` |
+| **Deposit** | `$2,400.00` |
+| **Landlord's claim** | `$1,200` for repainting, citing scuff marks |
+| **AI diff** | Move-in photos already showed paint fading, so the AI flags it as **normal wear** |
+| **Tenant** | Disputes the item |
+| **Arbiter** | Reviews the evidence and awards `$0` |
+| **Outcome** | Full `$2,400` returns to the tenant. 0 phone calls, 0 court fees |
 
 ---
 
-##  Core Capabilities
+## ✨ Core features
 
 | | Feature | What it does |
 |---|---|---|
-| 🔒 | **Smart Contract Escrow** | Deposits are locked and managed transparently on-chain. Nobody can touch the funds until the outcome is agreed or proven. |
-| 🤖 | **Automated Evidence Checks** | AI-driven photo verification compares check-in and check-out conditions and tells real damage apart from normal wear and tear. |
-| 🧾 | **Tamper-Evident Proof Chain** | Cryptographic hashes of move-in photos are anchored on the Sepolia contract, so evidence can't be quietly altered later. |
-| 📍 | **Geotagged Snapshots** | Inspection photos carry EXIF and location data to back up when and where they were taken. |
-| 🦊 | **MetaMask Login** | Connect your wallet to create and manage agreements. The connected wallet becomes the landlord, and the tenant is set by address. |
-| ⏱️ | **Configurable Claim Window** | The landlord picks how long they have to raise a claim (1 to 129,600 minutes) before the deposit is released. |
-| 🪙 | **ERC-20 & ETH Vaults** | Deposits can be held in ETH or ERC-20 tokens, with instant payout on settlement. |
-| ⚡ | **Decentralized Trust** | No intermediary bias. Deposits are returned based strictly on verified records. |
+| 🔒 | **Smart contract escrow** | The deposit is locked on-chain. Funds move only by contract rules |
+| 🧾 | **Tamper-evident proof** | Photo hashes and IPFS links are anchored on the Sepolia contract with timestamps |
+| 🤖 | **AI photo comparison** | Google Gemini shows what changed and separates real damage from normal wear |
+| 🧩 | **Itemized claims** | Each claimed item is accepted or disputed separately |
+| ⚖️ | **Arbiter for disputes** | A neutral third party rules only on disputed items |
+| ⏱️ | **Claim window** | 1 minute to 90 days. No claim in time means a full refund |
+| 🛡️ | **Safe payouts** | Reentrancy protection, and a failed payout is saved for withdrawal so nobody's money gets locked |
+| 🦊 | **MetaMask login** | The connected wallet is your identity |
 
 ---
 
@@ -73,137 +114,105 @@ A real-world example from the app:
 <table>
   <tr>
     <td width="50%" align="center">
-      <img src="docs/screenshots/02-evidence-demo.png" alt="AI evidence diff and dispute resolution"/>
-      <br/><sub><b>AI diff + tamper-evident proof chain</b><br/>A $1,200 repainting claim is dismissed as normal wear.</sub>
+      <img src="docs/screenshots/02-evidence-demo.png" alt="AI evidence diff"/>
+      <br/><sub><b>AI diff + proof chain</b></sub>
     </td>
     <td width="50%" align="center">
-      <img src="docs/screenshots/04-create-agreement.png" alt="Create agreement modal"/>
-      <br/><sub><b>Create an on-chain agreement</b><br/>Set the tenant, deposit and claim window.</sub>
+      <img src="docs/screenshots/04-create-agreement.png" alt="Create agreement"/>
+      <br/><sub><b>Create an on-chain agreement</b></sub>
     </td>
   </tr>
   <tr>
     <td colspan="2" align="center">
-      <img src="docs/screenshots/03-dashboard.png" alt="Agreements dashboard with MetaMask on Sepolia"/>
-      <br/><sub><b>Agreements dashboard</b><br/>Track every deposit from <code>Created</code> to <code>Settled</code>, connected through MetaMask on Sepolia.</sub>
+      <img src="docs/screenshots/03-dashboard.png" alt="Agreements dashboard"/>
+      <br/><sub><b>Agreements dashboard</b> on Sepolia via MetaMask</sub>
     </td>
   </tr>
 </table>
 
 ---
 
-## 🧭 How it works
-
-```mermaid
-flowchart LR
-    A[🏠 Move-In<br/>Photos captured] --> B[🔐 Hashes anchored<br/>on Sepolia contract]
-    B --> C[💰 Deposit locked<br/>in escrow]
-    C --> D[📸 Move-Out<br/>inspection photos]
-    D --> E[🤖 AI diff vs.<br/>move-in baseline]
-    E -->|Normal wear| F[✅ Full deposit<br/>returned to tenant]
-    E -->|Real damage| G[⚖️ Fair deduction<br/>settled to landlord]
-```
-
-1. **Create** an agreement: tenant wallet, deposit amount and claim window.
-2. **Document** the place on Day 1 with timestamped photos.
-3. **Anchor** the photo hashes on-chain and lock the deposit.
-4. **Compare** move-out photos against the baseline using AI.
-5. **Settle** automatically (`Created` → `CheckoutRequested` → `Settled`), on evidence rather than opinion.
-
----
-
-## 🛠️ Tech Stack
+## 🛠️ Tech stack
 
 | Layer | Technologies |
 |---|---|
-| **Frontend** | React · TypeScript · Vite · Tailwind CSS · Three.js · Framer Motion |
+| **Smart contract** | Solidity · Foundry · OpenZeppelin · Sepolia testnet |
+| **Frontend** | React · TypeScript · Vite · Tailwind CSS · ethers.js · Three.js · Framer Motion |
 | **Backend** | Node.js · Express |
-| **AI Engine** | Google Gen AI SDK (`@google/genai`) |
-| **Blockchain** | Solidity · Ethereum (Sepolia testnet) |
+| **AI** | Google Gemini (`@google/genai`) |
+| **Evidence storage** | IPFS (link recorded on-chain) |
 
 ---
 
-## 🚀 Getting Started
+## 📜 Smart contract
 
-### Prerequisites
+- Source: [`contracts/src/RentalEscrow.sol`](contracts/src/RentalEscrow.sol)
+- Tests: [`contracts/test/RentalEscrow.t.sol`](contracts/test/RentalEscrow.t.sol)
+- ABI: [`docs/RentalEscrow.abi.json`](docs/RentalEscrow.abi.json)
+- **Sepolia address:** `YOUR_CONTRACT_ADDRESS`
+- Etherscan: https://sepolia.etherscan.io/address/YOUR_CONTRACT_ADDRESS
 
-- [Node.js](https://nodejs.org/) installed on your machine
-- A [Gemini API key](https://aistudio.google.com/apikey) for the AI evidence checks
+Run the tests:
 
-### Installation
+```bash
+cd contracts
+forge test
+```
 
-**1. Clone the repository**
+---
+
+## 🚀 Run the app locally
 
 ```bash
 git clone https://github.com/sharanyashetty013-droid/Solidity-gang-.git
 cd Solidity-gang-
-```
-
-**2. Switch to the frontend branch**
-
-```bash
-git checkout feature/frontend-components
-```
-
-**3. Install dependencies**
-
-```bash
 npm install
-```
-
-**4. Set up environment variables**
-
-```bash
-cp .env.example .env
-```
-
-Then open `.env` and fill in your keys (see `.env.example` for the exact variable names).
-
-**5. Run the app**
-
-```bash
+cp .env.example .env    # add your own keys
 npm run dev
 ```
 
-Open the local URL shown in your terminal and you're in. 🎉
+You need Node.js, MetaMask on Sepolia with test ETH, and a [Gemini API key](https://aistudio.google.com/apikey).
 
 ---
 
-## 📁 Project Structure
+## 📁 Project structure
 
 ```
 Solidity-gang-/
-├── docs/screenshots # README images
-├── public/          # Static assets
-├── src/             # React + TypeScript source
-├── .env.example     # Environment variable template
-├── index.html       # App entry point
-├── vite.config.ts   # Vite configuration
+├── contracts/
+│   ├── src/RentalEscrow.sol
+│   └── test/RentalEscrow.t.sol
+├── docs/              # ABI + screenshots
+├── public/
+├── src/               # React + TypeScript app
+├── .env.example
 └── package.json
 ```
 
 ---
 
+## ⚠️ Known limits (hackathon scope)
+
+- The arbiter is set by the contract deployer. Production would use a multisig or a panel.
+- There is no arbiter timeout yet.
+- Only the tenant can request checkout. Production would let the landlord do it after the lease end date.
+- ETH only, on testnet.
+
 ## 🗺️ Roadmap
 
-- [x] Landing page with 3D hero
+- [x] Escrow contract with itemized claims and arbiter
 - [x] Evidence timeline and AI diff UI
-- [ ] Mainnet-ready escrow contract audit
-- [ ] Multi-room, multi-photo inspections
+- [ ] Arbiter timeout and multisig arbiter panel
+- [ ] ERC-20 / stablecoin deposits
+- [ ] Landlord-triggered checkout
 - [ ] Mobile-first capture flow
-- [ ] Dispute appeals with human arbitrators
-
----
-
-## 🤝 Contributing
-
-Contributions, issues and feature ideas are welcome! Fork the repo, create your branch, and open a pull request.
+- [ ] Contract audit
 
 ---
 
 <div align="center">
 
 ### Built by the **Solidity Gang** 💗
-
 *Because walls don't lie.*
 
 </div>
